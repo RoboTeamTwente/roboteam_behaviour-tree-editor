@@ -1,4 +1,5 @@
 import datetime
+import globals
 
 class DndHandler:
 
@@ -46,6 +47,7 @@ class DndHandler:
             self.source.drawLine(DndHandler.clicked[0], DndHandler.clicked[1])
             DndHandler.clicked = []
 
+        globals.main_window.spawnProperties(self.source)
 
     def on_motion(self, event):
         x, y = event.x_root, event.y_root

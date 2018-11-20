@@ -1,6 +1,7 @@
 import tkinter
 import datetime
 from Line import Line
+from collections import defaultdict
 
 from DndHandler import DndHandler
 
@@ -15,11 +16,14 @@ class Node:
 
     nodeCounter = 0
 
-    def __init__(self, name):
+    def __init__(self, name, properties):
         self.id = Node.nodeCounter
         self.name = name
         self.canvas = self.label = None
         self.lines = []
+        self.properties = defaultdict(str)
+        for prop in properties:
+            self.properties[prop] = None
         Node.nodeCounter += 1
 
     def attach(self, canvas, x=30, y=20):

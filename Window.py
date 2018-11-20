@@ -3,8 +3,14 @@ from Node import Node
 
 class Window:
 
-    def __init__(self, root):
+    types = dict()
+    nodes = dict()
+
+    def __init__(self, root, types, nodes):
         self.root = root
+
+        Window.types = types
+        Window.nodes = nodes
 
         self.window = tkinter.PanedWindow()
         self.window.pack(fill=tkinter.BOTH, expand=1)
@@ -22,22 +28,42 @@ class Window:
         # self.canvas.pack(fill="both", expand=1)
         self.canvas.dnd_accept = self.dnd_accept
 
-        self.properties = tkinter.PanedWindow(self.window)
-        self.window.add(self.properties)
+        self.prop_window = tkinter.PanedWindow(self.window)
+        self.window.add(self.prop_window)
         # self.properties.pack(fill=tkinter.BOTH, expand=1, side=tkinter.RIGHT)
 
-        self.dropdown = tkinter.OptionMenu(self.properties, tkinter.StringVar(self.root), "One", "Two", "Three")
-        self.properties.add(self.dropdown)
-        # self.dropdown.pack()
+        newNode = tkinter.Button(self.nodeList, text="Root", command=lambda name="Root": self.addNode(name))
+        newNode.pack(fill=tkinter.BOTH)
 
+        for type, nodes in types.items():
+            newLabel = tkinter.Label(self.nodeList, text=type)
+            newLabel.pack(fill=tkinter.BOTH)
+            for node in nodes:
+                newNode = tkinter.Button(self.nodeList, text=node, command= lambda name = node: self.addNode(name))
+                newNode.pack(fill=tkinter.BOTH)
 
-        nodes = "Root", "Repeater", "Sequence", "ParallelSequence"
-        for node in nodes:
-            newNode = tkinter.Button(self.nodeList, text=node, command= lambda name = node: self.addNode(name))
-            newNode.pack(fill=tkinter.BOTH)
+    def removeProperties(self):
+        for item in self.prop_window.winfo_children():
+            item.destroy()
+
+    def spawnProperties(self, node):
+        self.removeProperties()
+
+        properties = node.properties
+        for property, value in properties.items():
+            window = tkinter.PanedWindow(self.prop_window)
+            print(property)
+            label = tkinter.Label(window, text=property)
+            label.pack(side=tkinter.LEFT)
+            entry = tkinter.Entry(window)
+            entry.pack(side=tkinter.RIGHT)
+            window.pack(fill=tkinter.X)
+
+        self.window.add(self.prop_window)
 
     def addNode(self, name):
-        node = Node(name)
+        print(Window.nodes)
+        node = Node(name, Window.nodes[name])
         node.attach(self.canvas)
 
     def dnd_accept(self, source, event):
