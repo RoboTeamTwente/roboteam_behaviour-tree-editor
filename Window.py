@@ -6,15 +6,30 @@ class Window:
     def __init__(self, root):
         self.root = root
 
-        self.nodeList = tkinter.PanedWindow(self.root, orient=tkinter.VERTICAL)
-        self.nodeList.pack(fill=tkinter.BOTH, expand=1, side=tkinter.LEFT)
+        self.window = tkinter.PanedWindow()
+        self.window.pack(fill=tkinter.BOTH, expand=1)
 
-        self.canvasPane = tkinter.PanedWindow(self.root)
-        self.canvasPane.pack(fill=tkinter.BOTH, expand=1)
+        self.nodeList = tkinter.PanedWindow(self.window, orient=tkinter.VERTICAL)
+        self.window.add(self.nodeList)
+        # self.nodeList.pack(fill=tkinter.BOTH, expand=1, side=tkinter.LEFT)
+
+        self.canvasPane = tkinter.PanedWindow(self.window)
+        self.window.add(self.canvasPane)
+        # self.canvasPane.pack(fill=tkinter.BOTH, expand=1)
 
         self.canvas = tkinter.Canvas(self.canvasPane, width=500, height=500)
-        self.canvas.pack(fill="both", expand=1)
+        self.canvasPane.add(self.canvas)
+        # self.canvas.pack(fill="both", expand=1)
         self.canvas.dnd_accept = self.dnd_accept
+
+        self.properties = tkinter.PanedWindow(self.window)
+        self.window.add(self.properties)
+        # self.properties.pack(fill=tkinter.BOTH, expand=1, side=tkinter.RIGHT)
+
+        self.dropdown = tkinter.OptionMenu(self.properties, tkinter.StringVar(self.root), "One", "Two", "Three")
+        self.properties.add(self.dropdown)
+        # self.dropdown.pack()
+
 
         nodes = "Root", "Repeater", "Sequence", "ParallelSequence"
         for node in nodes:
@@ -40,6 +55,15 @@ class Window:
         x, y = source.where(self.canvas, event)
         x1, y1, x2, y2 = self.canvas.bbox(self.dndid)
         self.canvas.move(self.dndid, x-x1, y-y1)
+
+        if len(source.lines) > 0:
+            for line in source.lines:
+                if line.a == source:
+                    source.canvas.coords(line.id, x, y, line.x2, line.y2)
+                    line.changeCoords([x, y, line.x2, line.y2])
+                elif line.b == source:
+                    source.canvas.coords(line.id, line.x1, line.y1, x, y)
+                    line.changeCoords([line.x1, line.y1, x, y])
 
     def dnd_leave(self, source, event):
         self.root.focus_set() # Hide highlight border

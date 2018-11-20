@@ -6,7 +6,7 @@ def main():
     root = tkinter.Tk()
     root.winfo_toplevel().title("RTT Behavior Tree Editor")
 
-    t1 = Window(root)
+    Window(root)
     root.mainloop()
 
 if __name__ == '__main__':

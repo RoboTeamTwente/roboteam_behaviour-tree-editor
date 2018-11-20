@@ -88,5 +88,8 @@ class Node:
         # compensate for initial pointer offset
         return x - self.x_off, y - self.y_off
 
+    def spawnOptions(self):
+        pass
+
     def dnd_end(self, target, event):
         pass

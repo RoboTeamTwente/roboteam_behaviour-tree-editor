@@ -74,18 +74,9 @@ class DndHandler:
                 new_target.dnd_enter(source, event)
                 self.target = new_target
 
-        if len(source.lines) > 0:
-            for line in source.lines:
-                if line.a == source:
-                    source.canvas.coords(line.id, source.x_orig + source.x_off, source.y_orig + source.y_off, line.x2, line.y2)
-                    line.changeCoords([x, y, line.x2, line.y2])
-                elif line.b == source:
-                    source.canvas.coords(line.id, source.x_orig + source.x_off, source.y_orig + source.y_off, line.x2, line.y2)
-                    line.changeCoords([line.x1, line.x2, x, y])
-
     def on_release(self, event):
         ms = (datetime.datetime.now() - self.time).microseconds / 1000
-        if ms < 200:
+        if ms < 150:
             self.click(event)
 
         self.finish(event, 1)
