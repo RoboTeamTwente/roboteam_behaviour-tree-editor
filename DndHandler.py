@@ -1,5 +1,6 @@
 import datetime
 import globals
+import keyboard
 
 class DndHandler:
 
@@ -40,12 +41,13 @@ class DndHandler:
                 pass
 
     def click(self, event):
-        if not DndHandler.clicked:
-            DndHandler.clicked.append(self.source)
-        elif len(DndHandler.clicked) == 1:
-            DndHandler.clicked.append(self.source)
-            self.source.drawLine(DndHandler.clicked[0], DndHandler.clicked[1])
-            DndHandler.clicked = []
+        if keyboard.is_pressed('d'):
+            if not DndHandler.clicked:
+                DndHandler.clicked.append(self.source)
+            elif len(DndHandler.clicked) == 1:
+                DndHandler.clicked.append(self.source)
+                self.source.drawLine(DndHandler.clicked[0], DndHandler.clicked[1])
+                DndHandler.clicked = []
 
         globals.main_window.spawnProperties(self.source)
 

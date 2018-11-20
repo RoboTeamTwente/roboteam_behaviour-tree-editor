@@ -22,8 +22,6 @@ def getNodes():
 
     return types, nodes
 
-
-
 def main():
     globals.initialize()
     root = tkinter.Tk()
