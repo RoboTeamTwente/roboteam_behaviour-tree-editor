@@ -1,5 +1,6 @@
 import tkinter
 from Node import Node
+import json
 
 class Window:
 
@@ -49,9 +50,45 @@ class Window:
 
         self.root.config(menu=self.menubar)
 
+    def addNodes(self, added, nodes_list, curr):
+        new_node = {}
+        new_node["children"] = []
+        added.append(curr)
+        for node in nodes_list:
+            if node.id == curr:
+                new_node["name"] = node.name
+                new_node["id"] = node.id
+                for line in node.lines:
+                    if line.a.id == curr:
+                        if line.b.id not in added:
+                            added.append(line.b.id)
+                            nodes_list.extend(self.addNodes(added, nodes_list, line.b.id))
+                            new_node["children"].append(line.b.id)
+                    else:
+                        if line.b.id not in added:
+                            added.append(line.b.id)
+                            nodes_list.extend(self.addNodes(added, nodes_list, line.a.id))
+                            new_node["children"].append(line.a.id)
+
+        nodes_list.append(new_node)
+        return nodes_list
+
     def saveTree(self):
-        name = input("Name:")
-        trees = []
+        name = "testJSON"
+        data = {}
+        data["name"] = name
+        data["trees"] = []
+        tree = {}
+        tree["title"] = name
+        tree["nodes"] = []
+
+        for node in Node.nodes:
+            if node.name == "Root":
+                tree["root"] = node.id
+                lines = node.lines
+                tree["nodes"] = self.addNodes([],Node.nodes, node.id)
+
+        print(tree["nodes"])
 
 
     def removeProperties(self):
@@ -66,7 +103,6 @@ class Window:
             window = tkinter.PanedWindow(self.prop_window)
             label = tkinter.Label(window, text=property)
             label.pack(side=tkinter.LEFT)
-            properties[property].trace("w", lambda name, index, node, sv=properties[property]:self.callback(sv, node))
             entry = tkinter.Entry(window, textvariable=properties[property])
             entry.pack(side=tkinter.RIGHT)
             window.pack(fill=tkinter.X)

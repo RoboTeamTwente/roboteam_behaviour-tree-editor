@@ -15,6 +15,7 @@ def dnd_start(source, event):
 class Node:
 
     nodeCounter = 0
+    nodes = []
 
     def __init__(self, name, properties):
         self.id = Node.nodeCounter
@@ -25,6 +26,7 @@ class Node:
         for prop in properties:
             self.properties[prop] = tkinter.StringVar()
         Node.nodeCounter += 1
+        Node.nodes.append(self)
 
     def attach(self, canvas, x=30, y=20):
         if canvas is self.canvas:
