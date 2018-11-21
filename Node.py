@@ -21,9 +21,9 @@ class Node:
         self.name = name
         self.canvas = self.label = None
         self.lines = []
-        self.properties = defaultdict(str)
+        self.properties = defaultdict()
         for prop in properties:
-            self.properties[prop] = None
+            self.properties[prop] = tkinter.StringVar()
         Node.nodeCounter += 1
 
     def attach(self, canvas, x=30, y=20):

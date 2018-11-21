@@ -22,6 +22,7 @@ def getNodes():
 
     return types, nodes
 
+
 def main():
     globals.initialize()
     root = tkinter.Tk()
@@ -31,6 +32,7 @@ def main():
 
     globals.main_window = Window(root, types, nodes)
     root.mainloop()
+
 
 if __name__ == '__main__':
     main()

@@ -42,6 +42,18 @@ class Window:
                 newNode = tkinter.Button(self.nodeList, text=node, command= lambda name = node: self.addNode(name))
                 newNode.pack(fill=tkinter.BOTH)
 
+        self.menubar = tkinter.Menu(self.root)
+        self.menubar.add_command(label="Save", command=lambda: self.saveTree())
+        self.menubar.add_command(label="Load")
+        self.menubar.add_command(label="Quit", command=self.root.quit)
+
+        self.root.config(menu=self.menubar)
+
+    def saveTree(self):
+        name = input("Name:")
+        trees = []
+
+
     def removeProperties(self):
         for item in self.prop_window.winfo_children():
             item.destroy()
@@ -52,10 +64,10 @@ class Window:
         properties = node.properties
         for property, value in properties.items():
             window = tkinter.PanedWindow(self.prop_window)
-            print(property)
             label = tkinter.Label(window, text=property)
             label.pack(side=tkinter.LEFT)
-            entry = tkinter.Entry(window)
+            properties[property].trace("w", lambda name, index, node, sv=properties[property]:self.callback(sv, node))
+            entry = tkinter.Entry(window, textvariable=properties[property])
             entry.pack(side=tkinter.RIGHT)
             window.pack(fill=tkinter.X)
 
