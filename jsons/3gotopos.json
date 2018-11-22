@@ -1,0 +1,82 @@
+{
+  "name": "3gotopos",
+  "data": {
+    "trees": [
+      {
+        "title": "3gotopos",
+        "root": 3,
+        "nodes": {
+          "3": {
+            "id": 3,
+            "name": "ParallelSequence",
+            "children": [
+              5,
+              7,
+              9
+            ]
+          },
+          "5": {
+            "id": 5,
+            "name": "Role",
+            "children": [
+              11
+            ],
+            "properties": {
+              " role_name": "role1"
+            }
+          },
+          "7": {
+            "id": 7,
+            "name": "Role",
+            "children": [
+              13
+            ],
+            "properties": {
+              " role_name": "role2"
+            }
+          },
+          "9": {
+            "id": 9,
+            "name": "Role",
+            "children": [
+              15
+            ],
+            "properties": {
+              " role_name": "role3"
+            }
+          },
+          "11": {
+            "id": 11,
+            "name": "GoToPos",
+            "properties": {
+              "ROLE": "role1",
+              "robotID": "1",
+              "x_pos": "3",
+              "y_pos": "3"
+            }
+          },
+          "13": {
+            "id": 13,
+            "name": "GoToPos",
+            "properties": {
+              "ROLE": "",
+              "robotID": "2",
+              "x_pos": "6",
+              "y_pos": "9"
+            }
+          },
+          "15": {
+            "id": 15,
+            "name": "GoToPos",
+            "properties": {
+              "ROLE": "",
+              "robotID": "3",
+              "x_pos": "8",
+              "y_pos": "8"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

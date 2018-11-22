@@ -1,6 +1,10 @@
 import tkinter
 from Node import Node
 import json
+import queue
+import os
+import pickle
+import operator
 
 class Window:
 
@@ -45,51 +49,102 @@ class Window:
 
         self.menubar = tkinter.Menu(self.root)
         self.menubar.add_command(label="Save", command=lambda: self.saveTree())
-        self.menubar.add_command(label="Load")
+        self.menubar.add_command(label="Load", command=lambda: self.loadTree())
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
         self.root.config(menu=self.menubar)
 
-    def addNodes(self, added, nodes_list, curr):
-        new_node = {}
-        new_node["children"] = []
-        added.append(curr)
-        for node in nodes_list:
-            if node.id == curr:
-                new_node["name"] = node.name
-                new_node["id"] = node.id
-                for line in node.lines:
-                    if line.a.id == curr:
-                        if line.b.id not in added:
-                            added.append(line.b.id)
-                            nodes_list.extend(self.addNodes(added, nodes_list, line.b.id))
-                            new_node["children"].append(line.b.id)
-                    else:
-                        if line.b.id not in added:
-                            added.append(line.b.id)
-                            nodes_list.extend(self.addNodes(added, nodes_list, line.a.id))
-                            new_node["children"].append(line.a.id)
+    def getChildren(self, node, added):
+        children = []
+        for line in node.lines:
+            if line.a == node:
+                if line.b not in added:
+                    children.append(line.b)
+            elif line.b == node:
+                if line.a not in added:
+                    children.append(line.a)
+            else:
+                exit("Line error")
 
-        nodes_list.append(new_node)
-        return nodes_list
+        return sorted(children, key=operator.attrgetter('x_orig'))
+
+
+    def loadTree(self):
+        file = 'trees/hanlo.p'
+        with open(file, 'rb') as f:
+            data = pickle.load(f)
+            pass
 
     def saveTree(self):
-        name = "testJSON"
+        name = input("Tree name")
+        que = queue.Queue()
+        added = []
+
+        json_file = {}
+        json_file["name"] = name
+
         data = {}
-        data["name"] = name
         data["trees"] = []
         tree = {}
         tree["title"] = name
-        tree["nodes"] = []
 
+        for n in Node.nodes:
+            if n.name == "Root":
+                root_children = self.getChildren(n, added)
+                if len(root_children) == 1:
+                    tree["root"] = root_children[0].id
+                    tree["nodes"] = {}
+                    que.put(root_children[0])
+                    added.append(n)
+                else:
+                    exit("Root has more than 1 child")
+                while not que.empty():
+                    node_dir = {}
+                    curr_node = que.get()
+                    node_dir["id"] = curr_node.id
+                    node_dir["name"] = curr_node.name
+                    children = self.getChildren(curr_node, added)
+                    if children:
+                        node_dir["children"] = []
+                        for child in children:
+                            que.put(child)
+                            node_dir["children"].append(child.id)
+
+                    properties = curr_node.properties
+                    if properties:
+                        node_dir["properties"] = {}
+                        for property, value in properties.items():
+                            node_dir["properties"][property] = value.get()
+
+                    tree["nodes"][curr_node.id] = node_dir
+                    added.append(curr_node)
+
+        data["trees"].append(tree)
+        json_file["data"] = data
+
+        file = "jsons/" + name + ".json"
+        with open(file, 'w') as f:
+            json.dump(json_file, f)
+        os.chmod(file, 0o777)
+
+        file = "trees/" + name + ".p"
+        pickle_nodes = []
         for node in Node.nodes:
-            if node.name == "Root":
-                tree["root"] = node.id
-                lines = node.lines
-                tree["nodes"] = self.addNodes([],Node.nodes, node.id)
+            node_dic = {}
+            node_dic["name"] = node.name
+            node_dic["lines"] = []
+            for line in node.lines:
+                node_dic["lines"].append([line.id, line.a.id, line.b.id])
 
-        print(tree["nodes"])
+            node_dic["x_orig"] = node.x_orig
+            node_dic["y_orig"] = node.y_orig
+            node_dic["x_off"] = node.x_off
+            node_dic["y_off"] = node.y_off
+            node_dic["id"] = node.id
+            pickle_nodes.append(node_dic)
 
+        with open(file, 'wb') as f:
+            pickle.dump(pickle_nodes, f)
 
     def removeProperties(self):
         for item in self.prop_window.winfo_children():

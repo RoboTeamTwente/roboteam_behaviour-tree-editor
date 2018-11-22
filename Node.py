@@ -17,7 +17,14 @@ class Node:
     nodeCounter = 0
     nodes = []
 
-    def __init__(self, name, properties):
+    def __init__(self, name, properties, load=None):
+        if load:
+            pass
+        else:
+            self.makeNode(name, properties)
+
+
+    def makeNode(self, name, properties):
         self.id = Node.nodeCounter
         self.name = name
         self.canvas = self.label = None
@@ -27,6 +34,9 @@ class Node:
             self.properties[prop] = tkinter.StringVar()
         Node.nodeCounter += 1
         Node.nodes.append(self)
+
+    def loadNode(self):
+        pass
 
     def attach(self, canvas, x=30, y=20):
         if canvas is self.canvas:
