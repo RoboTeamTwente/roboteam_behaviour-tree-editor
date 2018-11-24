@@ -1,4 +1,8 @@
-import tkinter
+try:
+    from tkinter import *
+except:
+    from Tkinter import *
+
 from Window import Window
 import os
 from collections import defaultdict
@@ -24,7 +28,7 @@ def getNodes():
 
 def main():
     globals.initialize()
-    root = tkinter.Tk()
+    root = Tk()
     root.minsize(width=800, height=600)
     root.winfo_toplevel().title("RTT Behavior Tree Editor")
     types, nodes = getNodes()

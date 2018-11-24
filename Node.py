@@ -1,4 +1,8 @@
-import tkinter
+try:
+    from tkinter import *
+except:
+    from Tkinter import *
+    
 import datetime
 from Line import Line
 from collections import defaultdict
@@ -31,11 +35,11 @@ class Node:
         self.lines = []
         self.properties = defaultdict()
         for prop in properties:
-            self.properties[prop] = tkinter.StringVar()
+            self.properties[prop] = StringVar()
         Node.nodeCounter += 1
         Node.nodes.append(self)
 
-    def loadNode(self):
+    def loadNode(self, node):
         pass
 
     def attach(self, canvas, x=30, y=20):
@@ -46,7 +50,7 @@ class Node:
             self.detach()
         if not canvas:
             return
-        label = tkinter.Button(canvas, text=self.name,
+        label = Button(canvas, text=self.name,
                               relief="raised")
         id = canvas.create_window(x, y, window=label, anchor="nw")
         self.canvas = canvas
@@ -66,7 +70,7 @@ class Node:
         b.lines.append(line)
         self.canvas.coords(lineid, x1, y1, x2, y2)
 
-        self.canvas.pack(fill=tkinter.BOTH, expand=1)
+        self.canvas.pack(fill=BOTH, expand=1)
 
     def detach(self):
         canvas = self.canvas

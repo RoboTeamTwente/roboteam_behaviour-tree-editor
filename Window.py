@@ -1,7 +1,16 @@
-import tkinter
+try:
+    from tkinter import *
+except:
+    from Tkinter import *
+    
 from Node import Node
 import json
-import queue
+
+try:
+    import queue as queue
+except ImportError:
+    import Queue as queue
+
 import os
 import pickle
 import operator
@@ -17,37 +26,37 @@ class Window:
         Window.types = types
         Window.nodes = nodes
 
-        self.window = tkinter.PanedWindow()
-        self.window.pack(fill=tkinter.BOTH, expand=1)
+        self.window = PanedWindow()
+        self.window.pack(fill=BOTH, expand=1)
 
-        self.nodeList = tkinter.PanedWindow(self.window, orient=tkinter.VERTICAL)
+        self.nodeList = PanedWindow(self.window, orient=VERTICAL)
         self.window.add(self.nodeList)
-        # self.nodeList.pack(fill=tkinter.BOTH, expand=1, side=tkinter.LEFT)
+        # self.nodeList.pack(fill=BOTH, expand=1, side=LEFT)
 
-        self.canvasPane = tkinter.PanedWindow(self.window)
+        self.canvasPane = PanedWindow(self.window)
         self.window.add(self.canvasPane)
-        # self.canvasPane.pack(fill=tkinter.BOTH, expand=1)
+        # self.canvasPane.pack(fill=BOTH, expand=1)
 
-        self.canvas = tkinter.Canvas(self.canvasPane, width=500, height=500)
+        self.canvas = Canvas(self.canvasPane, width=500, height=500)
         self.canvasPane.add(self.canvas)
         # self.canvas.pack(fill="both", expand=1)
         self.canvas.dnd_accept = self.dnd_accept
 
-        self.prop_window = tkinter.PanedWindow(self.window)
+        self.prop_window = PanedWindow(self.window)
         self.window.add(self.prop_window)
-        # self.properties.pack(fill=tkinter.BOTH, expand=1, side=tkinter.RIGHT)
+        # self.properties.pack(fill=BOTH, expand=1, side=RIGHT)
 
-        newNode = tkinter.Button(self.nodeList, text="Root", command=lambda name="Root": self.addNode(name))
-        newNode.pack(fill=tkinter.BOTH)
+        newNode = Button(self.nodeList, text="Root", command=lambda name="Root": self.addNode(name))
+        newNode.pack(fill=BOTH)
 
         for type, nodes in types.items():
-            newLabel = tkinter.Label(self.nodeList, text=type)
-            newLabel.pack(fill=tkinter.BOTH)
+            newLabel = Label(self.nodeList, text=type)
+            newLabel.pack(fill=BOTH)
             for node in nodes:
-                newNode = tkinter.Button(self.nodeList, text=node, command= lambda name = node: self.addNode(name))
-                newNode.pack(fill=tkinter.BOTH)
+                newNode = Button(self.nodeList, text=node, command= lambda name = node: self.addNode(name))
+                newNode.pack(fill=BOTH)
 
-        self.menubar = tkinter.Menu(self.root)
+        self.menubar = Menu(self.root)
         self.menubar.add_command(label="Save", command=lambda: self.saveTree())
         self.menubar.add_command(label="Load", command=lambda: self.loadTree())
         self.menubar.add_command(label="Quit", command=self.root.quit)
@@ -73,7 +82,7 @@ class Window:
         file = 'trees/hanlo.p'
         with open(file, 'rb') as f:
             data = pickle.load(f)
-            pass
+            print(data)
 
     def saveTree(self):
         name = input("Tree name")
@@ -155,12 +164,12 @@ class Window:
 
         properties = node.properties
         for property, value in properties.items():
-            window = tkinter.PanedWindow(self.prop_window)
-            label = tkinter.Label(window, text=property)
-            label.pack(side=tkinter.LEFT)
-            entry = tkinter.Entry(window, textvariable=properties[property])
-            entry.pack(side=tkinter.RIGHT)
-            window.pack(fill=tkinter.X)
+            window = PanedWindow(self.prop_window)
+            label = Label(window, text=property)
+            label.pack(side=LEFT)
+            entry = Entry(window, textvariable=properties[property])
+            entry.pack(side=RIGHT)
+            window.pack(fill=X)
 
         self.window.add(self.prop_window)
 
