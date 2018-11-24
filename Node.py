@@ -21,21 +21,27 @@ class Node:
     nodeCounter = 0
     nodes = []
 
-    def __init__(self, name, properties, load=None):
-        if load:
-            pass
-        else:
-            self.makeNode(name, properties)
+    def __init__(self, name, properties, loadProperties=None):
+        self.makeNode(name, properties, loadProperties)
 
-
-    def makeNode(self, name, properties):
+    def makeNode(self, name, properties, loadProperties):
         self.id = Node.nodeCounter
         self.name = name
         self.canvas = self.label = None
-        self.lines = []
         self.properties = defaultdict()
-        for prop in properties:
-            self.properties[prop] = StringVar()
+
+        if loadProperties:
+            self.lines = loadProperties["lines"]
+        else:
+            self.lines = []
+
+        try:
+            for prop, value in loadProperties.properties:
+                self.properties[prop] = StringVar(value)
+        except:
+            for prop in properties:
+                self.properties[prop] = StringVar()
+
         Node.nodeCounter += 1
         Node.nodes.append(self)
 

@@ -79,13 +79,16 @@ class Window:
 
 
     def loadTree(self):
-        file = 'trees/hanlo.p'
+        file = 'trees/testnema123.p'
         with open(file, 'rb') as f:
             data = pickle.load(f)
-            print(data)
+
+        print(data)
+        for node in data:
+            self.addNode(node["name"], node)
 
     def saveTree(self):
-        name = input("Tree name")
+        name = "testnema123"
         que = queue.Queue()
         added = []
 
@@ -100,6 +103,7 @@ class Window:
         for n in Node.nodes:
             if n.name == "Root":
                 root_children = self.getChildren(n, added)
+                # Check if the root only has 1 child
                 if len(root_children) == 1:
                     tree["root"] = root_children[0].id
                     tree["nodes"] = {}
@@ -136,24 +140,22 @@ class Window:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
 
-        file = "trees/" + name + ".p"
-        pickle_nodes = []
-        for node in Node.nodes:
-            node_dic = {}
-            node_dic["name"] = node.name
-            node_dic["lines"] = []
-            for line in node.lines:
-                node_dic["lines"].append([line.id, line.a.id, line.b.id])
+        for n in [node for node in Node.nodes if node.name != "Root"]:
+            try:
+                location = {}
+                location["x_orig"] = n.x_orig
+                location["x_off"] = n.x_off
+                location["y_orig"] = n.y_orig
+                location["y_off"] = n.y_off
+                data["trees"][0]["nodes"][str(n.id)]["location"] = location
+            except:
+                continue
 
-            node_dic["x_orig"] = node.x_orig
-            node_dic["y_orig"] = node.y_orig
-            node_dic["x_off"] = node.x_off
-            node_dic["y_off"] = node.y_off
-            node_dic["id"] = node.id
-            pickle_nodes.append(node_dic)
-
-        with open(file, 'wb') as f:
-            pickle.dump(pickle_nodes, f)
+        json_file["data"] = data
+        file = "trees/" + name + ".json"
+        with open(file, 'w') as f:
+            json.dump(json_file, f)
+        os.chmod(file, 0o777)
 
     def removeProperties(self):
         for item in self.prop_window.winfo_children():
@@ -173,10 +175,12 @@ class Window:
 
         self.window.add(self.prop_window)
 
-    def addNode(self, name):
-        print(Window.nodes)
-        node = Node(name, Window.nodes[name])
-        node.attach(self.canvas)
+    def addNode(self, name, loadProperties=None):
+        node = Node(name, Window.nodes[name], loadProperties)
+        if loadProperties:
+            node.attach(self.canvas, loadProperties["x_orig"], loadProperties["y_orig"])
+        else:
+            node.attach(self.canvas)
 
     def dnd_accept(self, source, event):
         return self
@@ -185,6 +189,7 @@ class Window:
         self.canvas.focus_set() # Show highlight border
         x, y = source.where(self.canvas, event)
         x1, y1, x2, y2 = source.canvas.bbox(source.id)
+
         dx, dy = x2-x1, y2-y1
         self.dndid = self.canvas.create_rectangle(x, y, x+dx, y+dy)
         self.dnd_motion(source, event)
