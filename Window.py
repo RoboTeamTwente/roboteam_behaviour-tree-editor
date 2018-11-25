@@ -30,7 +30,7 @@ class Window:
         self.window.pack(fill=BOTH, expand=1)
 
         self.topWindow = PanedWindow(self.window)
-        self.topWindow.pack(fill=BOTH, expand=1)
+        self.topWindow.pack(fill=X)
         self.treeName = StringVar()
         self.topWindow.add(Label(self.topWindow, text="Name"))
         self.nameEntry = Entry(self.topWindow, textvariable=self.treeName)
