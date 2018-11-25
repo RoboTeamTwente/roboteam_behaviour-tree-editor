@@ -2,7 +2,7 @@ try:
     from tkinter import *
 except:
     from Tkinter import *
-    
+
 from Node import Node
 import json
 
@@ -15,8 +15,8 @@ import os
 import pickle
 import operator
 
-class Window:
 
+class Window:
     types = dict()
     nodes = dict()
 
@@ -26,15 +26,27 @@ class Window:
         Window.types = types
         Window.nodes = nodes
 
-        self.window = PanedWindow()
+        self.window = PanedWindow(orient=VERTICAL)
         self.window.pack(fill=BOTH, expand=1)
 
-        self.nodeList = PanedWindow(self.window, orient=VERTICAL)
-        self.window.add(self.nodeList)
+        self.topWindow = PanedWindow(self.window)
+        self.topWindow.pack(fill=BOTH, expand=1)
+        self.treeName = StringVar()
+        self.topWindow.add(Label(self.topWindow, text="Name"))
+        self.nameEntry = Entry(self.topWindow, textvariable=self.treeName)
+        self.topWindow.add(self.nameEntry)
+        self.e = Entry()
+        self.e.pack()
+
+        self.bottomWindow = PanedWindow(self.window)
+        self.bottomWindow.pack(fill=BOTH, expand=1)
+
+        self.nodeList = PanedWindow(self.bottomWindow, orient=VERTICAL)
+        self.bottomWindow.add(self.nodeList)
         # self.nodeList.pack(fill=BOTH, expand=1, side=LEFT)
 
-        self.canvasPane = PanedWindow(self.window)
-        self.window.add(self.canvasPane)
+        self.canvasPane = PanedWindow(self.bottomWindow)
+        self.bottomWindow.add(self.canvasPane)
         # self.canvasPane.pack(fill=BOTH, expand=1)
 
         self.canvas = Canvas(self.canvasPane, width=500, height=500)
@@ -42,8 +54,8 @@ class Window:
         # self.canvas.pack(fill="both", expand=1)
         self.canvas.dnd_accept = self.dnd_accept
 
-        self.prop_window = PanedWindow(self.window)
-        self.window.add(self.prop_window)
+        self.prop_window = PanedWindow(self.bottomWindow)
+        self.bottomWindow.add(self.prop_window)
         # self.properties.pack(fill=BOTH, expand=1, side=RIGHT)
 
         newNode = Button(self.nodeList, text="Root", command=lambda name="Root": self.addNode(name))
@@ -53,7 +65,7 @@ class Window:
             newLabel = Label(self.nodeList, text=type)
             newLabel.pack(fill=BOTH)
             for node in nodes:
-                newNode = Button(self.nodeList, text=node, command= lambda name = node: self.addNode(name))
+                newNode = Button(self.nodeList, text=node, command=lambda name=node: self.addNode(name))
                 newNode.pack(fill=BOTH)
 
         self.menubar = Menu(self.root)
@@ -77,28 +89,46 @@ class Window:
 
         return sorted(children, key=operator.attrgetter('x_orig'))
 
-
     def loadTree(self):
-        file = 'trees/testnema123.p'
-        with open(file, 'rb') as f:
-            data = pickle.load(f)
+        name = self.treeName.get()
+        self.e.focus()
+        file = 'big_jsons/' + name + '.json'
+        with open(file, 'r') as f:
+            data = json.load(f)
 
-        print(data)
-        for node in data:
+        # Draw nodes
+        nodes = data["data"]["trees"][0]["nodes"]
+        root_child = None
+        for id, node in nodes.items():
             self.addNode(node["name"], node)
+            if not root_child:
+                self.addNode("Root")
+                root_child = node["id"]
+
+        # Loop again to draw lines
+        for id, node in nodes.items():
+            try:
+                children = node["children"]
+                for child in children:
+                    first_node = [n for n in Node.nodes if n.id == int(id)][0]
+                    second_node = [n for n in Node.nodes if n.id == int(child)][0]
+                    first_node.drawLine(first_node, second_node)
+            except:
+                pass
 
     def saveTree(self):
-        name = "testnema123"
+        name = self.treeName.get()
         que = queue.Queue()
         added = []
 
-        json_file = {}
-        json_file["name"] = name
+        json_file = {"name": name}
+        big_json_file = {"name": name}
 
-        data = {}
-        data["trees"] = []
-        tree = {}
-        tree["title"] = name
+        data = {"trees": []}
+        big_data = {"trees": []}
+
+        tree = {"title": name}
+        big_tree = {"title": name}
 
         for n in Node.nodes:
             if n.name == "Root":
@@ -107,54 +137,54 @@ class Window:
                 if len(root_children) == 1:
                     tree["root"] = root_children[0].id
                     tree["nodes"] = {}
+                    big_tree["root"] = root_children[0].id
+                    big_tree["nodes"] = {}
                     que.put(root_children[0])
                     added.append(n)
                 else:
                     exit("Root has more than 1 child")
                 while not que.empty():
-                    node_dir = {}
+                    node_dic = {}
                     curr_node = que.get()
-                    node_dir["id"] = curr_node.id
-                    node_dir["name"] = curr_node.name
+                    node_dic["id"] = curr_node.id
+                    print(curr_node.id)
+                    node_dic["name"] = curr_node.name
                     children = self.getChildren(curr_node, added)
                     if children:
-                        node_dir["children"] = []
+                        node_dic["children"] = []
                         for child in children:
                             que.put(child)
-                            node_dir["children"].append(child.id)
+                            node_dic["children"].append(child.id)
 
                     properties = curr_node.properties
                     if properties:
-                        node_dir["properties"] = {}
+                        node_dic["properties"] = {}
                         for property, value in properties.items():
-                            node_dir["properties"][property] = value.get()
+                            node_dic["properties"][property] = value.get()
 
-                    tree["nodes"][curr_node.id] = node_dir
+                    tree["nodes"][curr_node.id] = node_dic
+                    # Save the locations only in the big json
+
+                    node_dic["location"] = {}
+                    node_dic["location"]["x"] = curr_node.x_orig
+                    node_dic["location"]["y"] = curr_node.y_orig
+
+                    big_tree["nodes"][curr_node.id] = node_dic
                     added.append(curr_node)
 
         data["trees"].append(tree)
+        big_data["trees"].append(big_tree)
         json_file["data"] = data
+        big_json_file["data"] = big_data
 
         file = "jsons/" + name + ".json"
         with open(file, 'w') as f:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
 
-        for n in [node for node in Node.nodes if node.name != "Root"]:
-            try:
-                location = {}
-                location["x_orig"] = n.x_orig
-                location["x_off"] = n.x_off
-                location["y_orig"] = n.y_orig
-                location["y_off"] = n.y_off
-                data["trees"][0]["nodes"][str(n.id)]["location"] = location
-            except:
-                continue
-
-        json_file["data"] = data
-        file = "trees/" + name + ".json"
+        file = "big_jsons/" + name + ".json"
         with open(file, 'w') as f:
-            json.dump(json_file, f)
+            json.dump(big_json_file, f)
         os.chmod(file, 0o777)
 
     def removeProperties(self):
@@ -173,12 +203,12 @@ class Window:
             entry.pack(side=RIGHT)
             window.pack(fill=X)
 
-        self.window.add(self.prop_window)
+        self.bottomWindow.add(self.prop_window)
 
     def addNode(self, name, loadProperties=None):
         node = Node(name, Window.nodes[name], loadProperties)
         if loadProperties:
-            node.attach(self.canvas, loadProperties["x_orig"], loadProperties["y_orig"])
+            node.attach(self.canvas, loadProperties["location"]["x"], loadProperties["location"]["y"])
         else:
             node.attach(self.canvas)
 
@@ -186,18 +216,18 @@ class Window:
         return self
 
     def dnd_enter(self, source, event):
-        self.canvas.focus_set() # Show highlight border
+        self.canvas.focus_set()  # Show highlight border
         x, y = source.where(self.canvas, event)
-        x1, y1, x2, y2 = source.canvas.bbox(source.id)
+        x1, y1, x2, y2 = source.canvas.bbox(source.canvas_id)
 
-        dx, dy = x2-x1, y2-y1
-        self.dndid = self.canvas.create_rectangle(x, y, x+dx, y+dy)
+        dx, dy = x2 - x1, y2 - y1
+        self.dndid = self.canvas.create_rectangle(x, y, x + dx, y + dy)
         self.dnd_motion(source, event)
 
     def dnd_motion(self, source, event):
         x, y = source.where(self.canvas, event)
         x1, y1, x2, y2 = self.canvas.bbox(self.dndid)
-        self.canvas.move(self.dndid, x-x1, y-y1)
+        self.canvas.move(self.dndid, x - x1, y - y1)
 
         if len(source.lines) > 0:
             for line in source.lines:
@@ -209,7 +239,7 @@ class Window:
                     line.changeCoords([line.x1, line.y1, x, y])
 
     def dnd_leave(self, source, event):
-        self.root.focus_set() # Hide highlight border
+        self.root.focus_set()  # Hide highlight border
         self.canvas.delete(self.dndid)
         self.dndid = None
 
