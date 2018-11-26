@@ -6,8 +6,9 @@ except:
 import datetime
 from Line import Line
 from collections import defaultdict
-
 from DndHandler import DndHandler
+import random
+import string
 
 def dnd_start(source, event):
     h = DndHandler(source, event)
@@ -21,18 +22,19 @@ class Node:
     nodeCounter = 0
     nodes = []
 
-    def __init__(self, name, properties, loadProperties=None):
+    def __init__(self, name, properties, loadProperties=None, isRole = False):
         self.lines = []
         self.properties = defaultdict()
         self.canvas = self.label = None
         self.name = name
         self.makeNode(properties, loadProperties)
+        self.isRole = isRole
 
     def makeNode(self, properties, loadProperties):
         try:
             self.id = loadProperties["id"]
         except:
-            self.id = Node.nodeCounter
+            self.id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
             Node.nodeCounter += 1
 
         try:
@@ -42,7 +44,6 @@ class Node:
         except:
             for prop in properties:
                 self.properties[prop] = StringVar()
-            print(sys.exc_info()[0])
 
         Node.nodes.append(self)
 

@@ -68,9 +68,19 @@ class Window:
                 newNode = Button(self.nodeList, text=node, command=lambda name=node: self.addNode(name))
                 newNode.pack(fill=BOTH)
 
+        newLabel = Label(self.nodeList, text="Roles")
+        newLabel.pack(fill=BOTH)
+        for file in os.listdir("roles/"):
+            roleName = file[:-5]
+            newNode = Button(self.nodeList, text=roleName, command=lambda name=roleName: self.addNode(name, isRole=True))
+            newNode.pack(fill=BOTH)
+
+
         self.menubar = Menu(self.root)
         self.menubar.add_command(label="Save", command=lambda: self.saveTree())
         self.menubar.add_command(label="Load", command=lambda: self.loadTree())
+        self.menubar.add_command(label="Save role", command=lambda: self.saveTree(True))
+        self.menubar.add_command(label="Load role", command=lambda: self.loadTree(True))
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
         self.root.config(menu=self.menubar)
@@ -89,10 +99,13 @@ class Window:
 
         return sorted(children, key=operator.attrgetter('x_orig'))
 
-    def loadTree(self):
+    def loadTree(self, loadRole=False):
         name = self.treeName.get()
         self.e.focus()
-        file = 'big_jsons/' + name + '.json'
+        if loadRole:
+            file = 'roles/' + name + '.json'
+        else:
+            file = 'big_jsons/' + name + '.json'
         with open(file, 'r') as f:
             data = json.load(f)
 
@@ -117,7 +130,22 @@ class Window:
             except:
                 pass
 
-    def saveTree(self):
+    def addRole(self, role):
+        roleList = {}
+        with open("roles/" + role.name + ".json") as f:
+            data = json.load(f)
+
+        roleRoot = None
+        for id, node in data["data"]["trees"][0]["nodes"].items():
+            if not roleRoot:
+                roleRoot = id
+            else:
+                roleList[id] = node
+                print(node)
+
+        return roleRoot, roleList
+
+    def saveTree(self, saveRole = False):
         name = self.treeName.get()
         que = queue.Queue()
         added = []
@@ -148,45 +176,60 @@ class Window:
                     node_dic = {}
                     curr_node = que.get()
                     node_dic["id"] = curr_node.id
-                    print(curr_node.id)
                     node_dic["name"] = curr_node.name
                     children = self.getChildren(curr_node, added)
                     if children:
                         node_dic["children"] = []
                         for child in children:
-                            que.put(child)
-                            node_dic["children"].append(child.id)
+                            if child.isRole:
+                                id, roleChildren = self.addRole(child)
+                                node_dic["children"].append(id)
+                                for id, roleChild in roleChildren.items():
+                                    tree["nodes"][id] = roleChild
+                            else:
+                                que.put(child)
+                                node_dic["children"].append(child.id)
+                                properties = curr_node.properties
+                                if properties:
+                                    node_dic["properties"] = {}
+                                    for property, value in properties.items():
+                                        node_dic["properties"][property] = value.get()
 
-                    properties = curr_node.properties
-                    if properties:
-                        node_dic["properties"] = {}
-                        for property, value in properties.items():
-                            node_dic["properties"][property] = value.get()
+                                tree["nodes"][curr_node.id] = node_dic
+                                # Save the locations only in the big json
 
-                    tree["nodes"][curr_node.id] = node_dic
-                    # Save the locations only in the big json
+                                node_dic["location"] = {}
+                                node_dic["location"]["x"] = curr_node.x_orig
+                                node_dic["location"]["y"] = curr_node.y_orig
 
-                    node_dic["location"] = {}
-                    node_dic["location"]["x"] = curr_node.x_orig
-                    node_dic["location"]["y"] = curr_node.y_orig
+                                big_tree["nodes"][curr_node.id] = node_dic
 
-                    big_tree["nodes"][curr_node.id] = node_dic
-                    added.append(curr_node)
+                            added.append(curr_node)
 
         data["trees"].append(tree)
         big_data["trees"].append(big_tree)
         json_file["data"] = data
         big_json_file["data"] = big_data
 
-        file = "jsons/" + name + ".json"
-        with open(file, 'w') as f:
-            json.dump(json_file, f)
-        os.chmod(file, 0o777)
+        if saveRole:
+            file = "roles/" + name + ".json"
 
-        file = "big_jsons/" + name + ".json"
-        with open(file, 'w') as f:
-            json.dump(big_json_file, f)
-        os.chmod(file, 0o777)
+            with open(file, 'w') as f:
+                json.dump(json_file, f)
+            os.chmod(file, 0o777)
+        else:
+            file = "jsons/" + name + ".json"
+
+            with open(file, 'w') as f:
+                json.dump(json_file, f)
+            os.chmod(file, 0o777)
+
+            file = "big_jsons/" + name + ".json"
+            with open(file, 'w') as f:
+                json.dump(big_json_file, f)
+            os.chmod(file, 0o777)
+
+
 
     def removeProperties(self):
         for item in self.prop_window.winfo_children():
@@ -206,8 +249,8 @@ class Window:
 
         self.bottomWindow.add(self.prop_window)
 
-    def addNode(self, name, loadProperties=None):
-        node = Node(name, Window.nodes[name], loadProperties)
+    def addNode(self, name, loadProperties=None, isRole = False):
+        node = Node(name, Window.nodes[name], loadProperties, isRole)
         if loadProperties:
             node.attach(self.canvas, loadProperties["location"]["x"], loadProperties["location"]["y"])
         else:

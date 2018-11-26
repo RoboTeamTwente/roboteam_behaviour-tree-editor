@@ -1,0 +1,27 @@
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "1T0I8GRK04GEV2I": {
+            "id": "1T0I8GRK04GEV2I",
+            "properties": {
+              "robotID": "",
+              "ROLE": "",
+              "x_pos": "",
+              "y_pos": ""
+            },
+            "name": "GoToPos",
+            "location": {
+              "y": 274.0,
+              "x": 238.0
+            }
+          }
+        },
+        "root": "NFHUAI86QB9UEE6",
+        "title": "testSTrategt"
+      }
+    ]
+  },
+  "name": "testSTrategt"
+}
