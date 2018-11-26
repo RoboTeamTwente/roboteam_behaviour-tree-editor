@@ -189,13 +189,10 @@ class Window:
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
                                     try:
-                                        # print(roleChild)
-                                        # print(roleChild["properties"]["robotID"])
-                                        # print("Curr", curr_node.properties)
                                         roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
-                                        roleChild["properties"]["robotID"] = curr_node.properties["robotID"].get()
                                     except:
-                                        pass
+                                        roleChild["properties"] = {}
+                                        roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
 
                                     tree["nodes"][id] = roleChild
                             else:
@@ -245,8 +242,6 @@ class Window:
             with open(file, 'w') as f:
                 json.dump(big_json_file, f)
             os.chmod(file, 0o777)
-
-
 
     def removeProperties(self):
         for item in self.prop_window.winfo_children():
