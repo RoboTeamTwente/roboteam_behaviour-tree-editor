@@ -1,0 +1,1 @@
+{"data": {"trees": [{"nodes": {"0JTQCHYLN321VDJ": {"location": {"y": 275.0, "x": 214.0}, "id": "0JTQCHYLN321VDJ", "name": "supercooltactic", "title": "Tactic"}, "R7NW5M3VITFE2K4": {"location": {"y": 180.0, "x": 200.0}, "children": ["0JTQCHYLN321VDJ"], "id": "R7NW5M3VITFE2K4", "title": "Repeater"}}, "root": "R7NW5M3VITFE2K4", "title": "hanlotactic"}]}, "name": "hanlotactic"}

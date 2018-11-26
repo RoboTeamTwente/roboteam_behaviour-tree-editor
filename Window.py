@@ -59,21 +59,21 @@ class Window:
         self.bottomWindow.add(self.prop_window)
         # self.properties.pack(fill=BOTH, expand=1, side=RIGHT)
 
-        newNode = Button(self.nodeList, text="Root", command=lambda name="Root": self.addNode(name))
+        newNode = Button(self.nodeList, text="Root", command=lambda title="Root": self.addNode(title))
         newNode.pack(fill=BOTH)
 
         for type, nodes in types.items():
             newLabel = Label(self.nodeList, text=type)
             newLabel.pack(fill=BOTH)
             for node in nodes:
-                newNode = Button(self.nodeList, text=node, command=lambda name=node: self.addNode(name))
+                newNode = Button(self.nodeList, text=node, command=lambda title=node: self.addNode(title))
                 newNode.pack(fill=BOTH)
 
         newLabel = Label(self.nodeList, text="Roles")
         newLabel.pack(fill=BOTH)
         for file in os.listdir("roles/"):
-            roleName = file[:-5]
-            newNode = Button(self.nodeList, text=roleName, command=lambda name=roleName: self.addNode(name, isRole=True))
+            roleTitle = file[:-5]
+            newNode = Button(self.nodeList, text=roleTitle, command=lambda title=roleTitle: self.addNode(title, isRole=True))
             newNode.pack(fill=BOTH)
 
 
@@ -114,7 +114,7 @@ class Window:
         nodes = data["data"]["trees"][0]["nodes"]
         root_child = None
         for id, node in nodes.items():
-            added_node = self.addNode(node["name"], node)
+            added_node = self.addNode(node["title"], node)
             if not root_child:
                 root = self.addNode("Root")
                 root_child = node["id"]
@@ -133,7 +133,7 @@ class Window:
 
     def addRole(self, role):
         roleList = {}
-        with open("roles/" + role.name + ".json") as f:
+        with open("roles/" + role.title + ".json") as f:
             data = json.load(f)
 
         roleRoot = None
@@ -162,7 +162,7 @@ class Window:
         big_tree = {"title": name}
 
         for n in Node.nodes:
-            if n.name == "Root":
+            if n.title == "Root":
                 root_children = self.getChildren(n, added)
                 # Check if the root only has 1 child
                 if len(root_children) == 1:
@@ -179,7 +179,7 @@ class Window:
                     node_dic = {}
                     curr_node = que.get()
                     node_dic["id"] = curr_node.id
-                    node_dic["name"] = curr_node.name
+                    node_dic["title"] = curr_node.title
                     children = self.getChildren(curr_node, added)
                     if children:
                         node_dic["children"] = []
@@ -192,8 +192,8 @@ class Window:
                                         # print(roleChild)
                                         # print(roleChild["properties"]["robotID"])
                                         # print("Curr", curr_node.properties)
-                                        roleChild["properties"]["ROLE"] = curr_node.properties[" ROLE"].get()
-                                        roleChild["properties"]["robotID"] = curr_node.properties[" robotID"].get()
+                                        roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
+                                        roleChild["properties"]["robotID"] = curr_node.properties["robotID"].get()
                                     except:
                                         pass
 
@@ -204,9 +204,13 @@ class Window:
 
                     properties = curr_node.properties
                     if properties:
-                        node_dic["properties"] = {}
-                        for property, value in properties.items():
-                            node_dic["properties"][property] = value.get()
+                        if curr_node.title != "Tactic":
+                            node_dic["properties"] = {}
+                            for property, value in properties.items():
+                                node_dic["properties"][property] = value.get()
+                        else:
+                            print(properties["name"])
+                            node_dic["name"] = properties["name"].get()
 
                     tree["nodes"][curr_node.id] = node_dic
                     # Save the locations only in the big json
@@ -262,8 +266,8 @@ class Window:
 
         self.bottomWindow.add(self.prop_window)
 
-    def addNode(self, name, loadProperties=None, isRole = False):
-        node = Node(name, Window.nodes[name], loadProperties, isRole)
+    def addNode(self, title, loadProperties=None, isRole = False):
+        node = Node(title, Window.nodes[title], loadProperties, isRole)
         if loadProperties:
             node.attach(self.canvas, loadProperties["location"]["x"], loadProperties["location"]["y"])
         else:
