@@ -1,1 +1,0 @@
-{"name": "blsbls", "data": {"trees": [{"title": "blsbls", "root": 3, "nodes": {"3": {"id": 3, "name": "Sequence", "children": [6]}, "6": {"id": 6, "name": "GoToPos", "properties": {"ROLE": "", "robotID": "", "x_pos": "", "y_pos": ""}}}}]}}

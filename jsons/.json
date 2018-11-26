@@ -1,0 +1,105 @@
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "75517IUXWL632ER": {
+            "id": "75517IUXWL632ER",
+            "location": {
+              "y": 155.0,
+              "x": 147.0
+            },
+            "name": "Sequence",
+            "children": [
+              "49U52FPZQ7VDYI1"
+            ]
+          },
+          "EZ17I1ML8ZE07BB": {
+            "id": "EZ17I1ML8ZE07BB",
+            "location": {
+              "y": 155.0,
+              "x": 147.0
+            },
+            "name": "Sequence",
+            "children": [
+              "49U52FPZQ7VDYI1"
+            ]
+          },
+          "WPG84YW1KJ2HUQS": {
+            "id": "WPG84YW1KJ2HUQS",
+            "properties": {
+              "robotID": "",
+              "role": "",
+              "x_pos": "5",
+              "y_pos": "5"
+            },
+            "name": "GoToPos",
+            "location": {
+              "y": 260.0,
+              "x": 162.0
+            }
+          },
+          "QDFCQJ7APLQIXFA": {
+            "properties": {
+              " role": "role1",
+              " robotID": "1"
+            },
+            "location": {
+              "y": 251.0,
+              "x": 34.0
+            },
+            "children": [
+              "WPG84YW1KJ2HUQS"
+            ],
+            "id": "QDFCQJ7APLQIXFA",
+            "name": "Role"
+          },
+          "T7L0IBZUE6N65NJ": {
+            "properties": {
+              " role": "role2",
+              " robotID": "2"
+            },
+            "location": {
+              "y": 250.0,
+              "x": 222.0
+            },
+            "children": [
+              "LPJWDJ31X7I3NA2"
+            ],
+            "id": "T7L0IBZUE6N65NJ",
+            "name": "Role"
+          },
+          "WBVK8P4FDSOD4HN": {
+            "location": {
+              "y": 183.0,
+              "x": 90.0
+            },
+            "children": [
+              "QDFCQJ7APLQIXFA",
+              "T7L0IBZUE6N65NJ"
+            ],
+            "id": "WBVK8P4FDSOD4HN",
+            "name": "ParallelSequence"
+          },
+          "LPJWDJ31X7I3NA2": {
+            "id": "LPJWDJ31X7I3NA2",
+            "properties": {
+              "robotID": "",
+              "role": "",
+              "x_pos": "5",
+              "y_pos": "5"
+            },
+            "name": "GoToPos",
+            "location": {
+              "y": 260.0,
+              "x": 162.0
+            }
+          }
+        },
+        "root": "WBVK8P4FDSOD4HN",
+        "title": ""
+      }
+    ]
+  },
+  "name": ""
+}
