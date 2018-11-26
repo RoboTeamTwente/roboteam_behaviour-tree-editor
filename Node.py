@@ -22,11 +22,11 @@ class Node:
     nodeCounter = 0
     nodes = []
 
-    def __init__(self, name, properties, loadProperties=None, isRole = False):
+    def __init__(self, title, properties, loadProperties=None, isRole = False):
         self.lines = []
         self.properties = {}
         self.canvas = self.label = None
-        self.name = name
+        self.title = title
         self.makeNode(properties, loadProperties)
         self.isRole = isRole
 
@@ -47,7 +47,6 @@ class Node:
 
         Node.nodes.append(self)
 
-
     def attach(self, canvas, x=30, y=20):
         if canvas is self.canvas:
             self.canvas.coords(self.canvas_id, x, y)
@@ -56,7 +55,7 @@ class Node:
             self.detach()
         if not canvas:
             return
-        label = Button(canvas, text=self.name,
+        label = Button(canvas, text=self.title,
                               relief="raised")
         canvas_id = canvas.create_window(x, y, window=label, anchor="nw")
         self.canvas = canvas
