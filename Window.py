@@ -14,7 +14,8 @@ except ImportError:
 import os
 import pickle
 import operator
-
+import random
+import string
 
 class Window:
     types = dict()
@@ -137,11 +138,12 @@ class Window:
 
         roleRoot = None
         for id, node in data["data"]["trees"][0]["nodes"].items():
+            id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
             if not roleRoot:
                 roleRoot = id
-            else:
-                roleList[id] = node
-                print(node)
+
+            node["id"] = id
+            roleList[id] = node
 
         return roleRoot, roleList
 
@@ -172,6 +174,7 @@ class Window:
                     added.append(n)
                 else:
                     exit("Root has more than 1 child")
+
                 while not que.empty():
                     node_dic = {}
                     curr_node = que.get()
@@ -185,26 +188,36 @@ class Window:
                                 id, roleChildren = self.addRole(child)
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
+                                    try:
+                                        # print(roleChild)
+                                        # print(roleChild["properties"]["robotID"])
+                                        # print("Curr", curr_node.properties)
+                                        roleChild["properties"]["ROLE"] = curr_node.properties[" ROLE"].get()
+                                        roleChild["properties"]["robotID"] = curr_node.properties[" robotID"].get()
+                                    except:
+                                        pass
+
                                     tree["nodes"][id] = roleChild
                             else:
                                 que.put(child)
                                 node_dic["children"].append(child.id)
-                                properties = curr_node.properties
-                                if properties:
-                                    node_dic["properties"] = {}
-                                    for property, value in properties.items():
-                                        node_dic["properties"][property] = value.get()
 
-                                tree["nodes"][curr_node.id] = node_dic
-                                # Save the locations only in the big json
+                    properties = curr_node.properties
+                    if properties:
+                        node_dic["properties"] = {}
+                        for property, value in properties.items():
+                            node_dic["properties"][property] = value.get()
 
-                                node_dic["location"] = {}
-                                node_dic["location"]["x"] = curr_node.x_orig
-                                node_dic["location"]["y"] = curr_node.y_orig
+                    tree["nodes"][curr_node.id] = node_dic
+                    # Save the locations only in the big json
 
-                                big_tree["nodes"][curr_node.id] = node_dic
+                    node_dic["location"] = {}
+                    node_dic["location"]["x"] = curr_node.x_orig
+                    node_dic["location"]["y"] = curr_node.y_orig
 
-                            added.append(curr_node)
+                    big_tree["nodes"][curr_node.id] = node_dic
+
+                    added.append(curr_node)
 
         data["trees"].append(tree)
         big_data["trees"].append(big_tree)
@@ -293,3 +306,4 @@ class Window:
         self.dnd_leave(source, event)
         x, y = source.where(self.canvas, event)
         source.attach(self.canvas, x, y)
+

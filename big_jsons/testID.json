@@ -1,1 +1,0 @@
-{"data": {"trees": [{"nodes": {"B1YS3Z8GJ7": {"properties": {"robotID": "", "ROLE": "", "x_pos": "", "y_pos": ""}, "location": {"y": 184.0, "x": 224.0}, "id": "B1YS3Z8GJ7", "name": "GoToPos"}, "BFX9JE3EF4": {"location": {"y": 116.0, "x": 220.0}, "children": ["B1YS3Z8GJ7"], "id": "BFX9JE3EF4", "name": "Sequence"}}, "root": "BFX9JE3EF4", "title": "testID"}]}, "name": "testID"}

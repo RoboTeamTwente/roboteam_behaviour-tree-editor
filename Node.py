@@ -24,7 +24,7 @@ class Node:
 
     def __init__(self, name, properties, loadProperties=None, isRole = False):
         self.lines = []
-        self.properties = defaultdict()
+        self.properties = {}
         self.canvas = self.label = None
         self.name = name
         self.makeNode(properties, loadProperties)
