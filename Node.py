@@ -64,23 +64,23 @@ class Node:
         label.bind("<ButtonPress>", self.press)
 
     def drawLine(self, a, b):
-        try:
-            x1 = a.x_orig + a.x_off
-            y1 = a.y_orig + a.y_off
-            x2 = b.x_orig + b.x_off
-            y2 = b.y_orig + b.y_off
-        except:
-            x1, y1 = a.canvas.coords(a.canvas_id)
-            x2, y2 = b.canvas.coords(b.canvas_id)
+        if not a == b:
+            try:
+                x1 = a.x_orig + a.x_off
+                y1 = a.y_orig + a.y_off
+                x2 = b.x_orig + b.x_off
+                y2 = b.y_orig + b.y_off
+            except:
+                x1, y1 = a.canvas.coords(a.canvas_id)
+                x2, y2 = b.canvas.coords(b.canvas_id)
 
+            lineid = self.canvas.create_line(x1, y1, x2, y2)
+            line = Line(lineid, a, b, [x1, y1, x2, y2])
+            a.lines.append(line)
+            b.lines.append(line)
+            self.canvas.coords(lineid, x1, y1, x2, y2)
 
-        lineid = self.canvas.create_line(x1, y1, x2, y2)
-        line = Line(lineid, a, b, [x1, y1, x2, y2])
-        a.lines.append(line)
-        b.lines.append(line)
-        self.canvas.coords(lineid, x1, y1, x2, y2)
-
-        self.canvas.pack(fill=BOTH, expand=1)
+            self.canvas.pack(fill=BOTH, expand=1)
 
     def detach(self):
         canvas = self.canvas

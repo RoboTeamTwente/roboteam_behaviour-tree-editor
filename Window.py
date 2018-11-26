@@ -100,10 +100,11 @@ class Window:
         nodes = data["data"]["trees"][0]["nodes"]
         root_child = None
         for id, node in nodes.items():
-            self.addNode(node["name"], node)
+            added_node = self.addNode(node["name"], node)
             if not root_child:
-                self.addNode("Root")
+                root = self.addNode("Root")
                 root_child = node["id"]
+                root.drawLine(root, added_node)
 
         # Loop again to draw lines
         for id, node in nodes.items():
@@ -211,6 +212,8 @@ class Window:
             node.attach(self.canvas, loadProperties["location"]["x"], loadProperties["location"]["y"])
         else:
             node.attach(self.canvas)
+
+        return node
 
     def dnd_accept(self, source, event):
         return self
