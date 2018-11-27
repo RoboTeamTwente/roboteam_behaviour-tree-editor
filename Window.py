@@ -50,7 +50,7 @@ class Window:
         self.bottomWindow.add(self.canvasPane)
         # self.canvasPane.pack(fill=BOTH, expand=1)
 
-        self.canvas = Canvas(self.canvasPane, width=500, height=500)
+        self.canvas = Canvas(self.canvasPane, width=1100, height=900)
         self.canvasPane.add(self.canvas)
         # self.canvas.pack(fill="both", expand=1)
         self.canvas.dnd_accept = self.dnd_accept
@@ -189,10 +189,13 @@ class Window:
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
                                     try:
+                                        # print(roleChild)
+                                        # print(roleChild["properties"]["robotID"])
+                                        # print("Curr", curr_node.properties)
                                         roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
+                                        roleChild["properties"]["robotID"] = curr_node.properties["robotID"].get()
                                     except:
-                                        roleChild["properties"] = {}
-                                        roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
+                                        pass
 
                                     tree["nodes"][id] = roleChild
                             else:
@@ -242,6 +245,8 @@ class Window:
             with open(file, 'w') as f:
                 json.dump(big_json_file, f)
             os.chmod(file, 0o777)
+
+
 
     def removeProperties(self):
         for item in self.prop_window.winfo_children():
