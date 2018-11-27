@@ -40,7 +40,7 @@ class DndHandler:
             except AttributeError:
                 pass
 
-    def click(self, event):
+    def click(self):
         if keyboard.is_pressed('d'):
             if not DndHandler.clicked:
                 DndHandler.clicked.append(self.source)
@@ -48,6 +48,12 @@ class DndHandler:
                 DndHandler.clicked.append(self.source)
                 self.source.drawLine(DndHandler.clicked[0], DndHandler.clicked[1])
                 DndHandler.clicked = []
+        if keyboard.is_pressed('r'):
+            for line in self.source.lines:
+                self.source.canvas.after(10, self.source.canvas.delete, line.id)
+                del line
+            self.initial_widget.destroy()
+            return
 
         globals.main_window.spawnProperties(self.source)
 
@@ -81,10 +87,9 @@ class DndHandler:
     def on_release(self, event):
         ms = (datetime.datetime.now() - self.time).microseconds / 1000
         if ms < 150:
-            self.click(event)
+            self.click()
 
         self.finish(event, 1)
-
 
     def cancel(self, event=None):
         self.finish(event, 0)

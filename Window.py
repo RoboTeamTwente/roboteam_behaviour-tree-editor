@@ -4,6 +4,7 @@ except:
     from Tkinter import *
 
 from Node import Node
+from Line import Line
 import json
 
 try:
@@ -79,6 +80,7 @@ class Window:
 
 
         self.menubar = Menu(self.root)
+        self.menubar.add_command(label="New", command=lambda: self.newTree())
         self.menubar.add_command(label="Save", command=lambda: self.saveTree())
         self.menubar.add_command(label="Load", command=lambda: self.loadTree())
         self.menubar.add_command(label="Save role", command=lambda: self.saveTree(True))
@@ -86,6 +88,16 @@ class Window:
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
         self.root.config(menu=self.menubar)
+
+    def newTree(self):
+        for child in self.canvas.winfo_children():
+            child.destroy()
+
+        for node in Node.nodes:
+            for line in node.lines:
+                node.canvas.after(10, node.canvas.delete, line.id)
+                del line
+            del node
 
     def getChildren(self, node, added):
         children = []
@@ -102,6 +114,7 @@ class Window:
         return sorted(children, key=operator.attrgetter('x_orig'))
 
     def loadTree(self, loadRole=False):
+        self.newTree()
         name = self.treeName.get()
         self.e.focus()
         if loadRole:
@@ -159,7 +172,7 @@ class Window:
 
         return roleRoot, roleList
 
-    def saveTree(self, saveRole = False):
+    def saveTree(self, saveRole=False):
         name = self.treeName.get()
         que = queue.Queue()
         added = []
