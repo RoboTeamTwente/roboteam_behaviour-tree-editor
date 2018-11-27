@@ -1,0 +1,77 @@
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "DPTQYSKIJFSIQ9R": {
+            "properties": {
+              "ROLE": "role1"
+            },
+            "location": {
+              "y": 326.0,
+              "x": 363.0
+            },
+            "children": [
+              "C96RLZCSSWK1RZL"
+            ],
+            "id": "DPTQYSKIJFSIQ9R",
+            "title": "Role"
+          },
+          "C96RLZCSSWK1RZL": {
+            "id": "C96RLZCSSWK1RZL",
+            "title": "GoToPos",
+            "properties": {
+              "ROLE": "role1",
+              "x_pos": "",
+              "y_pos": ""
+            },
+            "location": {
+              "y": 253.0,
+              "x": 101.0
+            }
+          },
+          "OPJF26TP47KYNM6": {
+            "id": "OPJF26TP47KYNM6",
+            "properties": {
+              "ROLE": "role1"
+            },
+            "title": "Repeater",
+            "location": {
+              "y": 120.0,
+              "x": 177.0
+            },
+            "children": [
+              "2C8VV8SFHVGE0BU",
+              "6JYETZZGKACJIGG"
+            ]
+          },
+          "LLZI1FLF5RLR938": {
+            "properties": {
+              "ROLE": "role1"
+            },
+            "title": "Repeater",
+            "location": {
+              "y": 251.0,
+              "x": 260.0
+            },
+            "id": "LLZI1FLF5RLR938"
+          },
+          "K2K1HALW1EJ1UVG": {
+            "location": {
+              "y": 220.0,
+              "x": 519.0
+            },
+            "children": [
+              "DPTQYSKIJFSIQ9R"
+            ],
+            "id": "K2K1HALW1EJ1UVG",
+            "title": "ParallelSequence"
+          }
+        },
+        "root": "K2K1HALW1EJ1UVG",
+        "title": "hooooi"
+      }
+    ]
+  },
+  "name": "hooooi"
+}

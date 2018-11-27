@@ -1,0 +1,53 @@
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "TRZA2OV50QK5LCI": {
+            "properties": {
+              "ROLE": "role2"
+            },
+            "location": {
+              "y": 247.0,
+              "x": 368.0
+            },
+            "children": [
+              "FLJWB7UF4DL89Z0"
+            ],
+            "id": "TRZA2OV50QK5LCI",
+            "title": "Role"
+          },
+          "QWYDPUWQGGBXL6A": {
+            "properties": {
+              "ROLE": "role1"
+            },
+            "location": {
+              "y": 256.0,
+              "x": 114.0
+            },
+            "children": [
+              "FN4KIEOLMSMXVRO"
+            ],
+            "id": "QWYDPUWQGGBXL6A",
+            "title": "Role"
+          },
+          "MR8XNEAAJMH5VLK": {
+            "location": {
+              "y": 151.0,
+              "x": 213.0
+            },
+            "children": [
+              "QWYDPUWQGGBXL6A",
+              "TRZA2OV50QK5LCI"
+            ],
+            "id": "MR8XNEAAJMH5VLK",
+            "title": "ParallelSequence"
+          }
+        },
+        "root": "MR8XNEAAJMH5VLK",
+        "title": "testTactic"
+      }
+    ]
+  },
+  "name": "testTactic"
+}

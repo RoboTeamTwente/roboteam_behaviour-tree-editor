@@ -1,0 +1,131 @@
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "FN4KIEOLMSMXVRO": {
+            "id": "FN4KIEOLMSMXVRO",
+            "title": "GoToPos",
+            "properties": {
+              "ROLE": "role1",
+              "x_pos": "",
+              "y_pos": ""
+            },
+            "location": {
+              "y": 253.0,
+              "x": 101.0
+            }
+          },
+          "ZSB4TXMVCVDHJIF": {
+            "id": "ZSB4TXMVCVDHJIF",
+            "properties": {
+              "ROLE": "role2"
+            },
+            "title": "Repeater",
+            "location": {
+              "y": 120.0,
+              "x": 177.0
+            },
+            "children": [
+              "2C8VV8SFHVGE0BU",
+              "6JYETZZGKACJIGG"
+            ]
+          },
+          "TRZA2OV50QK5LCI": {
+            "properties": {
+              "ROLE": "role2"
+            },
+            "location": {
+              "y": 247.0,
+              "x": 368.0
+            },
+            "children": [
+              "FLJWB7UF4DL89Z0"
+            ],
+            "id": "TRZA2OV50QK5LCI",
+            "title": "Role"
+          },
+          "QWYDPUWQGGBXL6A": {
+            "properties": {
+              "ROLE": "role1"
+            },
+            "location": {
+              "y": 256.0,
+              "x": 114.0
+            },
+            "children": [
+              "FN4KIEOLMSMXVRO"
+            ],
+            "id": "QWYDPUWQGGBXL6A",
+            "title": "Role"
+          },
+          "MR8XNEAAJMH5VLK": {
+            "location": {
+              "y": 151.0,
+              "x": 213.0
+            },
+            "children": [
+              "QWYDPUWQGGBXL6A",
+              "TRZA2OV50QK5LCI"
+            ],
+            "id": "MR8XNEAAJMH5VLK",
+            "title": "ParallelSequence"
+          },
+          "TJMY925PFQ1QZWR": {
+            "properties": {
+              "ROLE": "role1"
+            },
+            "title": "Repeater",
+            "location": {
+              "y": 251.0,
+              "x": 260.0
+            },
+            "id": "TJMY925PFQ1QZWR"
+          },
+          "FLJWB7UF4DL89Z0": {
+            "id": "FLJWB7UF4DL89Z0",
+            "title": "GoToPos",
+            "properties": {
+              "ROLE": "role2",
+              "x_pos": "",
+              "y_pos": ""
+            },
+            "location": {
+              "y": 253.0,
+              "x": 101.0
+            }
+          },
+          "RI9NLRTNXQ3G5A8": {
+            "id": "RI9NLRTNXQ3G5A8",
+            "properties": {
+              "ROLE": "role1"
+            },
+            "title": "Repeater",
+            "location": {
+              "y": 120.0,
+              "x": 177.0
+            },
+            "children": [
+              "2C8VV8SFHVGE0BU",
+              "6JYETZZGKACJIGG"
+            ]
+          },
+          "UM7943T10IC7GTB": {
+            "properties": {
+              "ROLE": "role2"
+            },
+            "title": "Repeater",
+            "location": {
+              "y": 251.0,
+              "x": 260.0
+            },
+            "id": "UM7943T10IC7GTB"
+          }
+        },
+        "root": "MR8XNEAAJMH5VLK",
+        "title": "testTactic"
+      }
+    ]
+  },
+  "name": "testTactic"
+}

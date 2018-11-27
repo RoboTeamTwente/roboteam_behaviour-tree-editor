@@ -34,7 +34,7 @@ class Node:
         try:
             self.id = loadProperties["id"]
         except:
-            self.id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+            self.id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(random.randint(12, 16)))
             Node.nodeCounter += 1
 
         try:
