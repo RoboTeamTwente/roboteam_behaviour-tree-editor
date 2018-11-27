@@ -309,16 +309,17 @@ class Window:
     def dnd_motion(self, source, event):
         x, y = source.where(self.canvas, event)
         x1, y1, x2, y2 = self.canvas.bbox(self.dndid)
+
         self.canvas.move(self.dndid, x - x1, y - y1)
 
         if len(source.lines) > 0:
             for line in source.lines:
                 if line.a == source:
-                    source.canvas.coords(line.id, x, y, line.x2, line.y2)
-                    line.changeCoords([x, y, line.x2, line.y2])
+                    source.canvas.coords(line.id, x + source.x_off, y + source.y_off, line.x2, line.y2)
+                    line.changeCoords([x + source.x_off, y + source.y_off, line.x2, line.y2])
                 elif line.b == source:
-                    source.canvas.coords(line.id, line.x1, line.y1, x, y)
-                    line.changeCoords([line.x1, line.y1, x, y])
+                    source.canvas.coords(line.id, line.x1, line.y1, x + source.x_off, y + source.y_off)
+                    line.changeCoords([line.x1, line.y1, x + source.x_off, y + source.y_off])
 
     def dnd_leave(self, source, event):
         self.root.focus_set()  # Hide highlight border
