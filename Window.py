@@ -204,13 +204,12 @@ class Window:
 
                     properties = curr_node.properties
                     if properties:
-                        if curr_node.title != "Tactic":
+                        if curr_node.title != "Tactic" and curr_node.title != "Role":
                             node_dic["properties"] = {}
                             for property, value in properties.items():
                                 node_dic["properties"][property] = value.get()
                         else:
-                            print(properties["name"])
-                            node_dic["name"] = properties["name"].get()
+                            node_dic["name"] = properties["ROLE"].get()
 
                     tree["nodes"][curr_node.id] = node_dic
                     # Save the locations only in the big json

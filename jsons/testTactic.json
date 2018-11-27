@@ -1,0 +1,58 @@
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "QAI5CFCMFWQAJRQ": {
+            "location": {
+              "y": 273.0,
+              "x": 185.0
+            },
+            "children": [
+              "B6N562XBKR0EDG4"
+            ],
+            "id": "QAI5CFCMFWQAJRQ",
+            "name": "testRole",
+            "title": "Role"
+          },
+          "1LDXRG30781CUAY": {
+            "id": "1LDXRG30781CUAY",
+            "title": "Kick",
+            "properties": {
+              "ROLE": "testRole"
+            },
+            "location": {
+              "y": 327.0,
+              "x": 492.0
+            }
+          },
+          "HYVXA3EOWT6AIPH": {
+            "location": {
+              "y": 165.0,
+              "x": 153.0
+            },
+            "children": [
+              "QAI5CFCMFWQAJRQ"
+            ],
+            "id": "HYVXA3EOWT6AIPH",
+            "title": "Sequence"
+          },
+          "B6N562XBKR0EDG4": {
+            "id": "B6N562XBKR0EDG4",
+            "title": "Repeater",
+            "location": {
+              "y": 182.0,
+              "x": 458.0
+            },
+            "children": [
+              "9NGGWHVSL9MJP1W"
+            ]
+          }
+        },
+        "root": "HYVXA3EOWT6AIPH",
+        "title": "testTactic"
+      }
+    ]
+  },
+  "name": "testTactic"
+}
