@@ -138,7 +138,7 @@ class Window:
 
         roleRoot = None
         for id, node in data["data"]["trees"][0]["nodes"].items():
-            id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+            id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(15))
             if not roleRoot:
                 roleRoot = id
 
