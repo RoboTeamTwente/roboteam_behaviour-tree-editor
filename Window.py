@@ -123,14 +123,12 @@ class Window:
 
         # Loop again to draw lines
         for id, node in nodes.items():
-            try:
+            if "children" in node:
                 children = node["children"]
                 for child in children:
                     first_node = [n for n in Node.nodes if n.id == int(id)][0]
                     second_node = [n for n in Node.nodes if n.id == int(child)][0]
                     first_node.drawLine(first_node, second_node)
-            except:
-                pass
 
     def addRole(self, role):
         roleList = {}
@@ -202,11 +200,9 @@ class Window:
                                 id, roleChildren = self.addRole(child)
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
-                                    try:
+                                    if "ROLE" in curr_node.properties and "robotID" in curr_node.properties:
                                         roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
                                         roleChild["properties"]["robotID"] = curr_node.properties["robotID"].get()
-                                    except:
-                                        pass
 
                                     tree["nodes"][id] = roleChild
                             else:
@@ -257,8 +253,6 @@ class Window:
             with open(file, 'w') as f:
                 json.dump(big_json_file, f)
             os.chmod(file, 0o777)
-
-
 
     def removeProperties(self):
         for item in self.prop_window.winfo_children():

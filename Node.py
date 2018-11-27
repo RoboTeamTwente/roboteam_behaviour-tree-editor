@@ -28,17 +28,17 @@ class Node:
         self.isRole = isRole
 
     def makeNode(self, properties, loadProperties):
-        try:
+        if loadProperties:
             self.id = loadProperties["id"]
-        except:
+        else:
             self.id = globals.randomID()
             Node.nodeCounter += 1
 
-        try:
+        if loadProperties:
             for prop, value in loadProperties["properties"].items():
                 self.properties[prop] = StringVar()
                 self.properties[prop].set(value)
-        except:
+        else:
             for prop in properties:
                 self.properties[prop] = StringVar()
 
@@ -100,7 +100,6 @@ class Node:
     def move(self, event):
         x, y = self.where(self.canvas, event)
         self.canvas.coords(self.canvas_id, x, y)
-
 
     def putback(self):
         self.canvas.coords(self.canvas_id, self.x_orig, self.y_orig)
