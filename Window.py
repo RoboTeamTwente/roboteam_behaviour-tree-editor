@@ -120,7 +120,7 @@ class Window:
         if loadRole:
             file = 'roles/' + name + '.json'
         else:
-            file = 'big_jsons/' + name + '.json'
+            file = 'jsons/' + name + '.json'
         with open(file, 'r') as f:
             data = json.load(f)
 
