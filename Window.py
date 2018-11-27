@@ -255,6 +255,9 @@ class Window:
             with open(file, 'w') as f:
                 json.dump(json_file, f)
             os.chmod(file, 0o777)
+
+            newNode = Button(self.nodeList, text=name, command=lambda title=name: self.addNode(title, isRole=True))
+            newNode.pack(fill=BOTH)
         else:
             file = "jsons/" + name + ".json"
 
