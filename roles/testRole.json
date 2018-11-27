@@ -1,0 +1,46 @@
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "2C8VV8SFHVGE0BU": {
+            "properties": {
+              "ROLE": "",
+              "x_pos": "",
+              "y_pos": ""
+            },
+            "location": {
+              "y": 253.0,
+              "x": 101.0
+            },
+            "id": "2C8VV8SFHVGE0BU",
+            "title": "GoToPos"
+          },
+          "6JYETZZGKACJIGG": {
+            "location": {
+              "y": 251.0,
+              "x": 260.0
+            },
+            "id": "6JYETZZGKACJIGG",
+            "title": "Repeater"
+          },
+          "SU6EGMJ1CH2AKF6": {
+            "location": {
+              "y": 120.0,
+              "x": 177.0
+            },
+            "children": [
+              "2C8VV8SFHVGE0BU",
+              "6JYETZZGKACJIGG"
+            ],
+            "id": "SU6EGMJ1CH2AKF6",
+            "title": "Repeater"
+          }
+        },
+        "root": "SU6EGMJ1CH2AKF6",
+        "title": "testRole"
+      }
+    ]
+  },
+  "name": "testRole"
+}
