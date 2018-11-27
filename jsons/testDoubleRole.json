@@ -1,0 +1,93 @@
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "kduge7xqzcqehh5": {
+            "location": {
+              "y": 365.0,
+              "x": 430.0
+            },
+            "children": [
+              "kme2nwps8p7mv82"
+            ],
+            "id": "kduge7xqzcqehh5",
+            "name": "role2",
+            "title": "Role"
+          },
+          "v56g0v35ytuxhu2": {
+            "location": {
+              "y": 244.0,
+              "x": 287.0
+            },
+            "children": [
+              "hd5pxdkck1xuxnc",
+              "kduge7xqzcqehh5"
+            ],
+            "id": "v56g0v35ytuxhu2",
+            "title": "ParallelSequence"
+          },
+          "ckebryv7ljx5pds": {
+            "id": "ckebryv7ljx5pds",
+            "title": "Kick",
+            "properties": {
+              "ROLE": "role1"
+            },
+            "location": {
+              "y": 327.0,
+              "x": 492.0
+            }
+          },
+          "k92dxxpb1kb25by": {
+            "id": "k92dxxpb1kb25by",
+            "title": "Repeater",
+            "location": {
+              "y": 182.0,
+              "x": 458.0
+            },
+            "children": [
+              "9NGGWHVSL9MJP1W"
+            ]
+          },
+          "gfo2hfkfrhy658a": {
+            "id": "gfo2hfkfrhy658a",
+            "title": "Kick",
+            "properties": {
+              "ROLE": "role2"
+            },
+            "location": {
+              "y": 327.0,
+              "x": 492.0
+            }
+          },
+          "hd5pxdkck1xuxnc": {
+            "location": {
+              "y": 356.0,
+              "x": 183.0
+            },
+            "children": [
+              "k92dxxpb1kb25by"
+            ],
+            "id": "hd5pxdkck1xuxnc",
+            "name": "role1",
+            "title": "Role"
+          },
+          "kme2nwps8p7mv82": {
+            "id": "kme2nwps8p7mv82",
+            "title": "Repeater",
+            "location": {
+              "y": 182.0,
+              "x": 458.0
+            },
+            "children": [
+              "9NGGWHVSL9MJP1W"
+            ]
+          }
+        },
+        "root": "v56g0v35ytuxhu2",
+        "title": "testDoubleRole"
+      }
+    ]
+  },
+  "name": "testDoubleRole"
+}

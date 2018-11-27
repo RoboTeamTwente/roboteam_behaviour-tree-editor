@@ -29,7 +29,7 @@ def getNodes():
 def main():
     globals.initialize()
     root = Tk()
-    root.minsize(width=800, height=600)
+    root.minsize(width=1500, height=1000)
     root.winfo_toplevel().title("RTT Behavior Tree Editor")
     types, nodes = getNodes()
 

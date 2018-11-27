@@ -17,6 +17,7 @@ import pickle
 import operator
 import random
 import string
+import globals
 
 class Window:
     types = dict()
@@ -51,7 +52,7 @@ class Window:
         self.bottomWindow.add(self.canvasPane)
         # self.canvasPane.pack(fill=BOTH, expand=1)
 
-        self.canvas = Canvas(self.canvasPane, width=500, height=500)
+        self.canvas = Canvas(self.canvasPane, width=1100, height=900)
         self.canvasPane.add(self.canvas)
         # self.canvas.pack(fill="both", expand=1)
         self.canvas.dnd_accept = self.dnd_accept
@@ -135,26 +136,36 @@ class Window:
 
         # Loop again to draw lines
         for id, node in nodes.items():
-            try:
+            if "children" in node:
                 children = node["children"]
                 for child in children:
                     first_node = [n for n in Node.nodes if n.id == int(id)][0]
                     second_node = [n for n in Node.nodes if n.id == int(child)][0]
                     first_node.drawLine(first_node, second_node)
-            except:
-                pass
 
     def addRole(self, role):
         roleList = {}
+        changedIDs = {}
         with open("roles/" + role.title + ".json") as f:
             data = json.load(f)
 
         roleRoot = None
         for id, node in data["data"]["trees"][0]["nodes"].items():
-            id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(random.randint(12, 16)))
-            node["id"] = id
             if not roleRoot:
-                roleRoot = id
+                roleRoot = globals.randomID()
+                changedIDs[id] = roleRoot
+
+            if id in [key for key, _ in changedIDs.items()]:
+                id = changedIDs[id]
+            else:
+                id = globals.randomID()
+
+            if "children" in node:
+                for i, child in enumerate(node["children"]):
+                    if not child in [key for key, _ in changedIDs.items()]:
+                        changedIDs[child] = globals.randomID()
+
+                    node["children"][i] = changedIDs[child]
 
             node["id"] = id
             roleList[id] = node
@@ -202,11 +213,9 @@ class Window:
                                 id, roleChildren = self.addRole(child)
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
-                                    try:
+                                    if "ROLE" in curr_node.properties and "robotID" in curr_node.properties:
                                         roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
-                                    except:
-                                        roleChild["properties"] = {}
-                                        roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
+                                        roleChild["properties"]["robotID"] = curr_node.properties["robotID"].get()
 
                                     tree["nodes"][id] = roleChild
                             else:
@@ -215,13 +224,14 @@ class Window:
 
                     properties = curr_node.properties
                     if properties:
-                        if curr_node.title != "Tactic":
+                        if curr_node.title == "Tactic":
+                            node_dic["name"] = properties["name"].get()
+                        elif curr_node.title == "Role":
+                            node_dic["name"] = properties["ROLE"].get()
+                        else:
                             node_dic["properties"] = {}
                             for property, value in properties.items():
                                 node_dic["properties"][property] = value.get()
-                        else:
-                            print(properties["name"])
-                            node_dic["name"] = properties["name"].get()
 
                     tree["nodes"][curr_node.id] = node_dic
                     # Save the locations only in the big json
