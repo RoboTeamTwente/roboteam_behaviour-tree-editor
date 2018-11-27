@@ -49,10 +49,6 @@ class DndHandler:
                 self.source.drawLine(DndHandler.clicked[0], DndHandler.clicked[1])
                 DndHandler.clicked = []
 
-        if keyboard.is_pressed('r'):
-            self.source.canvas.destroy()
-            return True
-
         globals.main_window.spawnProperties(self.source)
         return False
 
@@ -84,13 +80,11 @@ class DndHandler:
                 self.target = new_target
 
     def on_release(self, event):
-        destroyed = False
         ms = (datetime.datetime.now() - self.time).microseconds / 1000
         if ms < 150:
-            destroyed = self.click()
+            self.click()
 
-        if not destroyed:
-            self.finish(event, 1)
+        self.finish(event, 1)
 
 
     def cancel(self, event=None):
