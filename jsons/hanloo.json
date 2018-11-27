@@ -3,55 +3,21 @@
     "trees": [
       {
         "nodes": {
-          "FY3LVWDNGYIJHAA": {
-            "properties": {
-              "ROLE": "role1"
-            },
-            "location": {
-              "y": 161.0,
-              "x": 200.0
-            },
-            "children": [
-              "E7NTTQLX5W4H6J0"
-            ],
-            "id": "FY3LVWDNGYIJHAA",
-            "title": "Role"
-          },
-          "E7NTTQLX5W4H6J0": {
-            "location": {
-              "y": 262.0,
-              "x": 151.0
-            },
-            "children": [
-              "YVWFFCB1OSBTZF3",
-              "YJ74QOSRDXWBOH6"
-            ],
-            "id": "E7NTTQLX5W4H6J0",
-            "title": "ParallelSequence"
-          },
-          "YVWFFCB1OSBTZF3": {
+          "AN0BN38VHBXQ": {
             "properties": {
               "ROLE": "",
               "x_pos": "",
               "y_pos": ""
             },
             "location": {
-              "y": 363.0,
-              "x": 82.0
+              "y": 184.0,
+              "x": 106.0
             },
-            "id": "YVWFFCB1OSBTZF3",
+            "id": "AN0BN38VHBXQ",
             "title": "GoToPos"
-          },
-          "YJ74QOSRDXWBOH6": {
-            "location": {
-              "y": 348.0,
-              "x": 290.0
-            },
-            "id": "YJ74QOSRDXWBOH6",
-            "title": "Repeater"
           }
         },
-        "root": "FY3LVWDNGYIJHAA",
+        "root": "AN0BN38VHBXQ",
         "title": "hanloo"
       }
     ]

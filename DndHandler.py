@@ -48,9 +48,14 @@ class DndHandler:
                 DndHandler.clicked.append(self.source)
                 self.source.drawLine(DndHandler.clicked[0], DndHandler.clicked[1])
                 DndHandler.clicked = []
+        if keyboard.is_pressed('r'):
+            for line in self.source.lines:
+                self.source.canvas.after(10, self.source.canvas.delete, line.id)
+                del line
+            self.initial_widget.destroy()
+            return
 
         globals.main_window.spawnProperties(self.source)
-        return False
 
     def on_motion(self, event):
         x, y = event.x_root, event.y_root
@@ -85,7 +90,6 @@ class DndHandler:
             self.click()
 
         self.finish(event, 1)
-
 
     def cancel(self, event=None):
         self.finish(event, 0)
