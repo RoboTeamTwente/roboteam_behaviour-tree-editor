@@ -233,7 +233,7 @@ class Window:
                             for property, value in properties.items():
                                 node_dic["properties"][property] = value.get()
 
-                    tree["nodes"][curr_node.id] = node_dic
+                    tree["nodes"][curr_node.id] = node_dic.copy()
                     # Save the locations only in the big json
 
                     node_dic["location"] = {}
