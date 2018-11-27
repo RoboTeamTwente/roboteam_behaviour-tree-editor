@@ -2,13 +2,10 @@ try:
     from tkinter import *
 except:
     from Tkinter import *
-    
-import datetime
+
 from Line import Line
-from collections import defaultdict
 from DndHandler import DndHandler
-import random
-import string
+import globals
 
 def dnd_start(source, event):
     h = DndHandler(source, event)
@@ -34,7 +31,7 @@ class Node:
         try:
             self.id = loadProperties["id"]
         except:
-            self.id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(15))
+            self.id = globals.randomID()
             Node.nodeCounter += 1
 
         try:

@@ -16,6 +16,7 @@ import pickle
 import operator
 import random
 import string
+import globals
 
 class Window:
     types = dict()
@@ -133,14 +134,27 @@ class Window:
 
     def addRole(self, role):
         roleList = {}
+        changedIDs = {}
         with open("roles/" + role.title + ".json") as f:
             data = json.load(f)
 
         roleRoot = None
         for id, node in data["data"]["trees"][0]["nodes"].items():
-            id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(15))
             if not roleRoot:
-                roleRoot = id
+                roleRoot = globals.randomID()
+                changedIDs[id] = roleRoot
+
+            if id in [key for key, _ in changedIDs.items()]:
+                id = changedIDs[id]
+            else:
+                id = globals.randomID()
+
+            if "children" in node:
+                for i, child in enumerate(node["children"]):
+                    if not child in [key for key, _ in changedIDs.items()]:
+                        changedIDs[child] = globals.randomID()
+
+                    node["children"][i] = changedIDs[child]
 
             node["id"] = id
             roleList[id] = node
@@ -189,9 +203,6 @@ class Window:
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
                                     try:
-                                        # print(roleChild)
-                                        # print(roleChild["properties"]["robotID"])
-                                        # print("Curr", curr_node.properties)
                                         roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
                                         roleChild["properties"]["robotID"] = curr_node.properties["robotID"].get()
                                     except:
