@@ -136,7 +136,7 @@ class Window:
         nodes = data["data"]["trees"][0]["nodes"]
         root_child = data["data"]["trees"][0]["root"]
         for id, node in nodes.items():
-            added_node = self.addNode(node["title"], node)
+            added_node = self.addNode(node["title"], node, node["isRole"])
             if id == root_child:
                 root_properties = {"location": {}}
                 root_properties["location"]["x"] = nodes[id]["location"]["x"]
@@ -210,6 +210,7 @@ class Window:
                     curr_node = que.get()
                     node_dic["id"] = curr_node.id
                     node_dic["title"] = curr_node.title
+                    node_dic["isRole"] = curr_node.isRole
                     children = self.getChildren(curr_node, added)
                     if children:
                         node_dic["children"] = []
@@ -219,14 +220,9 @@ class Window:
 
                     properties = curr_node.properties
                     if properties:
-                        if curr_node.title == "Tactic":
-                            node_dic["name"] = properties["name"].get()
-                        elif curr_node.title == "Role":
-                            node_dic["name"] = properties["ROLE"].get()
-                        else:
-                            node_dic["properties"] = {}
-                            for property, value in properties.items():
-                                node_dic["properties"][property] = value.get()
+                        node_dic["properties"] = {}
+                        for property, value in properties.items():
+                            node_dic["properties"][property] = value.get()
 
                     node_dic["location"] = {}
                     node_dic["location"]["x"] = curr_node.x_orig

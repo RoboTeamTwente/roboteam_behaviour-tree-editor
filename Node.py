@@ -19,7 +19,7 @@ class Node:
     nodeCounter = 0
     nodes = []
 
-    def __init__(self, title, properties, loadProperties=None, isRole = False):
+    def __init__(self, title, properties, loadProperties=None, isRole=False):
         self.lines = []
         self.properties = {}
         self.canvas = self.label = None
