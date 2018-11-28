@@ -318,6 +318,10 @@ class Window:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
 
+    def addProperty(self, node):
+        node.properties[self.custom_prop_string.get()] = StringVar()
+        self.spawnProperties(node)
+
     def removeProperties(self):
         for item in self.prop_window.winfo_children():
             item.destroy()
@@ -334,7 +338,14 @@ class Window:
             entry.pack(side=RIGHT)
             window.pack(fill=X)
 
-        self.bottomWindow.add(self.prop_window)
+        custom_prop_window = PanedWindow(self.prop_window)
+        self.custom_prop_string = StringVar()
+        cust_entry = Entry(custom_prop_window, textvariable=self.custom_prop_string)
+        cust_entry.pack(side=LEFT)
+
+        button = Button(custom_prop_window, text="Add", command=lambda node=node: self.addProperty(node))
+        button.pack(side=RIGHT)
+        custom_prop_window.pack(fill=X, pady=20)
 
     def addNode(self, title, loadProperties=None, isRole=False):
         node = Node(title, Window.nodes[title], loadProperties, isRole)
