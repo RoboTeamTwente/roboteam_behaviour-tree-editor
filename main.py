@@ -9,6 +9,7 @@ from collections import defaultdict
 import csv
 import globals
 
+
 def getNodes():
     DIR = "config_files/"
 
@@ -25,6 +26,7 @@ def getNodes():
                 nodes[node].extend(row[1:])
 
     return types, nodes
+
 
 def main():
     globals.initialize()

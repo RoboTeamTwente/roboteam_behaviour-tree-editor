@@ -28,13 +28,13 @@ class Node:
         self.isRole = isRole
 
     def makeNode(self, properties, loadProperties):
-        if loadProperties:
+        if "id" in loadProperties:
             self.id = loadProperties["id"]
         else:
             self.id = globals.randomID()
             Node.nodeCounter += 1
 
-        if loadProperties:
+        if loadProperties and "properties" in loadProperties:
             for prop, value in loadProperties["properties"].items():
                 self.properties[prop] = StringVar()
                 self.properties[prop].set(value)
