@@ -46,37 +46,33 @@ class Window:
 
         self.nodeList = PanedWindow(self.bottomWindow, orient=VERTICAL)
         self.bottomWindow.add(self.nodeList)
-        # self.nodeList.pack(fill=BOTH, expand=1, side=LEFT)
 
         self.canvasPane = PanedWindow(self.bottomWindow)
         self.bottomWindow.add(self.canvasPane)
-        # self.canvasPane.pack(fill=BOTH, expand=1)
 
         self.canvas = Canvas(self.canvasPane, width=1100, height=900)
         self.canvasPane.add(self.canvas)
-        # self.canvas.pack(fill="both", expand=1)
         self.canvas.dnd_accept = self.dnd_accept
 
         self.prop_window = PanedWindow(self.bottomWindow)
         self.bottomWindow.add(self.prop_window)
-        # self.properties.pack(fill=BOTH, expand=1, side=RIGHT)
 
+        # Spawn root node
         newNode = Button(self.nodeList, text="Root", command=lambda title="Root": self.addNode(title))
         newNode.pack(fill=BOTH)
 
+        # Spawn node types
         for type, nodes in types.items():
-            newLabel = Label(self.nodeList, text=type.capitalize())
+            nodeWindow = PanedWindow(self.nodeList)
+            newLabel = Button(nodeWindow, text=type.capitalize(), bd=0, command=lambda type=type, nodeWindow=nodeWindow: self.toggleNodes(type, nodeWindow))
             newLabel.pack(fill=BOTH)
-            for node in nodes:
-                newNode = Button(self.nodeList, text=node, command=lambda title=node: self.addNode(title))
-                newNode.pack(fill=BOTH)
+            nodeWindow.pack(fill=BOTH)
 
-        newLabel = Label(self.nodeList, text="Roles")
+        # Spawn role nodes
+        nodeWindow = PanedWindow(self.nodeList)
+        newLabel = Button(nodeWindow, text="Roles", bd=0, command=lambda nodeWindow=nodeWindow: self.toggleNodes("roles", nodeWindow))
         newLabel.pack(fill=BOTH)
-        for file in os.listdir("roles/"):
-            roleTitle = file[:-5]
-            newNode = Button(self.nodeList, text=roleTitle, command=lambda title=roleTitle: self.addNode(title, isRole=True))
-            newNode.pack(fill=BOTH)
+        nodeWindow.pack(fill=BOTH)
 
 
         self.menubar = Menu(self.root)
@@ -89,6 +85,25 @@ class Window:
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
         self.root.config(menu=self.menubar)
+
+    def toggleNodes(self, type, nodeWindow):
+        if type == "roles":
+            nodes = [file[:-5] for file in os.listdir("roles/")]
+            isRole = True
+        else:
+            nodes = Window.types[type]
+            isRole = False
+
+        destroying = False
+        for button in nodeWindow.winfo_children():
+            if button["text"] in nodes:
+                button.destroy()
+                destroying = True
+
+        if not destroying:
+            for node in nodes:
+                newNode = Button(nodeWindow, text=node, command=lambda title=node: self.addNode(title, isRole=isRole))
+                newNode.pack(fill=BOTH)
 
     def newTree(self):
         for child in self.canvas.winfo_children():
