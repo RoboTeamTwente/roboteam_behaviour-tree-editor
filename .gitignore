@@ -105,3 +105,8 @@ venv.bak/
 
 # Custom added
 .idea/workspace.xml
+
+# Tree folders
+jsons/
+roles/
+saved_trees/
