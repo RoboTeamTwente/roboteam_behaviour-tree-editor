@@ -104,7 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # Custom added
-.idea/workspace.xml
+.idea/*
 
 # Tree folders
 jsons/
