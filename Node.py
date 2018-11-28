@@ -28,7 +28,7 @@ class Node:
         self.isRole = isRole
 
     def makeNode(self, properties, loadProperties):
-        if "id" in loadProperties:
+        if loadProperties and "id" in loadProperties:
             self.id = loadProperties["id"]
         else:
             self.id = globals.randomID()
