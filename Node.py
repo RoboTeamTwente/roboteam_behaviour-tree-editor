@@ -19,7 +19,7 @@ class Node:
     nodeCounter = 0
     nodes = []
 
-    def __init__(self, title, properties, loadProperties=None, isRole = False):
+    def __init__(self, title, properties, loadProperties=None, isRole=False):
         self.lines = []
         self.properties = {}
         self.canvas = self.label = None
@@ -28,13 +28,13 @@ class Node:
         self.isRole = isRole
 
     def makeNode(self, properties, loadProperties):
-        if loadProperties:
+        if loadProperties and "id" in loadProperties:
             self.id = loadProperties["id"]
         else:
             self.id = globals.randomID()
             Node.nodeCounter += 1
 
-        if loadProperties:
+        if loadProperties and "properties" in loadProperties:
             for prop, value in loadProperties["properties"].items():
                 self.properties[prop] = StringVar()
                 self.properties[prop].set(value)

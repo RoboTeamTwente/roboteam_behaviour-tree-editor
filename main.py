@@ -9,6 +9,7 @@ from collections import defaultdict
 import csv
 import globals
 
+
 def getNodes():
     DIR = "config_files/"
 
@@ -26,10 +27,11 @@ def getNodes():
 
     return types, nodes
 
+
 def main():
     globals.initialize()
     root = Tk()
-    root.minsize(width=1500, height=1000)
+    root.minsize(width=750, height=500)
     root.winfo_toplevel().title("RTT Behavior Tree Editor")
     types, nodes = getNodes()
 
