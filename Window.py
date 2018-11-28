@@ -65,7 +65,7 @@ class Window:
         newNode.pack(fill=BOTH)
 
         for type, nodes in types.items():
-            newLabel = Label(self.nodeList, text=type)
+            newLabel = Label(self.nodeList, text=type.capitalize())
             newLabel.pack(fill=BOTH)
             for node in nodes:
                 newNode = Button(self.nodeList, text=node, command=lambda title=node: self.addNode(title))
