@@ -29,9 +29,11 @@ class Window:
         Window.types = types
         Window.nodes = nodes
 
+        # Create main window
         self.window = PanedWindow(orient=VERTICAL)
         self.window.pack(fill=BOTH, expand=1)
 
+        # Create top window that contains the tree name entrance
         self.topWindow = PanedWindow(self.window)
         self.topWindow.pack(fill=X)
 
@@ -42,6 +44,7 @@ class Window:
         self.e = Entry()
         self.e.pack()
 
+        # Create bottom window that contains the rest of the application
         self.bottomWindow = PanedWindow(self.window)
         self.bottomWindow.pack(fill=BOTH, expand=1)
 
@@ -51,6 +54,7 @@ class Window:
         self.canvasPane = PanedWindow(self.bottomWindow)
         self.bottomWindow.add(self.canvasPane)
 
+        # Create canvas that the trees can be drawn on
         self.canvas = Canvas(self.canvasPane, width=1100, height=900)
         self.canvasPane.add(self.canvas)
         self.canvas.dnd_accept = self.dnd_accept
@@ -75,11 +79,12 @@ class Window:
         newLabel.pack(fill=BOTH)
         nodeWindow.pack(fill=BOTH)
 
-
+        # Create menu bar
         self.menubar = Menu(self.root)
         self.menubar.add_command(label="New", command=lambda: self.newTree())
         self.menubar.add_command(label="Save tree", command=lambda: self.saveTree())
 
+        # Create tree loading menu with all saved_trees as buttons
         self.loadmenu = Menu(self.menubar, tearoff=0)
         for file in sorted([f for f in os.listdir("saved_trees") if f != ".keep"]):
             file = file[:-5]
@@ -88,6 +93,7 @@ class Window:
 
         self.menubar.add_command(label="Save role", command=lambda: self.saveTree(True))
 
+        # Create role loading menu with all roles as buttons
         self.loadRoleMenu = Menu(self.menubar, tearoff=0)
         for file in sorted([f for f in os.listdir("roles") if f != ".keep"]):
             file = file[:-5]
@@ -97,8 +103,10 @@ class Window:
         self.menubar.add_command(label="Export JSON", command=lambda: self.saveJSON())
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
+        # Configure menu bar
         self.root.config(menu=self.menubar)
 
+    # Function to show/hide nodes belonging to a certain type
     def toggleNodes(self, type, nodeWindow):
         if type == "roles":
             nodes = [file[:-5] for file in os.listdir("roles/")]
@@ -118,6 +126,7 @@ class Window:
                 newNode = Button(nodeWindow, text=node, command=lambda title=node: self.addNode(title, isRole=isRole))
                 newNode.pack(fill=BOTH)
 
+    # Removes all nodes and starts with fresh canvas
     def newTree(self):
         for child in self.canvas.winfo_children():
             child.destroy()
@@ -130,6 +139,7 @@ class Window:
             del node
         Node.nodes = []
 
+    # Get all children of specific node, and keep track of which are added
     def getChildren(self, node, added):
         children = []
         for line in node.lines:
@@ -180,12 +190,14 @@ class Window:
                     second_node = [n for n in Node.nodes if n.id == child][0]
                     first_node.drawLine(first_node, second_node)
 
-    def addRole(self, role):
+    # Load role in order to add to JSON
+    def loadRole(self, role):
         roleList = {}
-        changedIDs = {}
+        changedIDs = {}     # Dictionary to keep track of randomly changed IDs
         with open("roles/" + role.title + ".json") as f:
             data = json.load(f)
 
+        # Add Role node and add root as child of Role node
         roleRoot = globals.randomID()
         roleList[roleRoot] = {"id": roleRoot}
         roleList[roleRoot]["title"] = "Role"
@@ -213,6 +225,7 @@ class Window:
 
         return roleRoot, roleList
 
+    # Save tree so it can be loaded in again
     def saveTree(self, saveRole=False):
         name = self.treeName.get()
         que = queue.Queue()
@@ -279,6 +292,7 @@ class Window:
                 json.dump(json_file, f)
             os.chmod(file, 0o777)
 
+    # Save tree as interpretable JSON
     def saveJSON(self):
         name = self.treeName.get()
         que = queue.Queue()
@@ -309,10 +323,12 @@ class Window:
                     if children:
                         node_dic["children"] = []
                         for child in children:
+                            # If child is role node, replace it by it's matching role tree
                             if child.isRole:
-                                id, roleChildren = self.addRole(child)
+                                id, roleChildren = self.loadRole(child)
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
+                                    # Inherit ROLE from the role node
                                     if "ROLE" in child.properties and "properties" in roleChild:
                                         roleChild["properties"]["ROLE"] = child.properties["ROLE"].get()
 
@@ -326,6 +342,7 @@ class Window:
 
                     properties = curr_node.properties
                     if properties:
+                        # In case of Role and Tactic nodes, make the child name/role the name of the node
                         if curr_node.title == "Tactic":
                             node_dic["name"] = properties["name"].get()
                         elif curr_node.title == "Role":
@@ -348,14 +365,17 @@ class Window:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
 
+    # Add custom property
     def addProperty(self, node):
         node.properties[self.custom_prop_string.get()] = StringVar()
         self.spawnProperties(node)
 
+    # Remove previous spawned properties
     def removeProperties(self):
         for item in self.prop_window.winfo_children():
             item.destroy()
 
+    # Spawn property window
     def spawnProperties(self, node):
         self.removeProperties()
 
@@ -377,6 +397,7 @@ class Window:
         button.pack(side=RIGHT)
         custom_prop_window.pack(fill=X, pady=20)
 
+    # Add node to window
     def addNode(self, title, loadProperties=None, isRole=False):
         node = Node(title, Window.nodes[title], loadProperties, isRole)
         if loadProperties:

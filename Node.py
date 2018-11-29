@@ -25,15 +25,15 @@ class Node:
         self.canvas = self.label = None
         self.title = title
         self.isRole = isRole
-        self.makeNode(properties, loadProperties)
 
-    def makeNode(self, properties, loadProperties):
+        # Load id if id is set in loadProperties
         if loadProperties and "id" in loadProperties:
             self.id = loadProperties["id"]
         else:
             self.id = globals.randomID()
             Node.nodeCounter += 1
 
+        # Load existing properties if they are passed on
         if loadProperties and "properties" in loadProperties:
             for prop, value in loadProperties["properties"].items():
                 self.properties[prop] = StringVar()
@@ -63,6 +63,7 @@ class Node:
         self.canvas_id = canvas_id
         label.bind("<ButtonPress>", self.press)
 
+    # Draw line between nodes a and b
     def drawLine(self, a, b):
         if not a == b:
             for line in Line.lines:
