@@ -10,23 +10,31 @@ def makeWindow():
 
 
 class mainTest(unittest.TestCase):
-    def testRoleLoading(self):
-        self.assertEqual(len(main.getNodes()), len(os.listdir("roles")))
-
-    def testTkinter(self):
+    def test_Tkinter(self):
         root = main.Tk()
 
 
 class windowTest(unittest.TestCase):
-    def testInit(self):
+    def test_init(self):
         root = main.Tk()
         types, nodes = main.getNodes()
         main_window = Window(root, types, nodes)
         self.assertEqual(root, main_window.root)
 
+    def test_AddNode(self):
+        main_window = makeWindow()
+        node = main_window.addNode("testNode0")
+        self.assertIsInstance(node, Node)
+
+        properties = {"location": {}}
+        properties["location"]["x"] = 50
+        properties["location"]["y"] = 50
+        node2 = main_window.addNode("testNode0_1", properties)
+        self.assertEqual(node2.canvas.coords(node2.canvas_id), [50, 50])
+
 
 class lineTest(unittest.TestCase):
-    def testLineCounter(self):
+    def test_LineCounter(self):
         self.assertEqual(len(Line.lines), 0)
         node1 = Node("testNode1", [])
         node2 = Node("testNode2", [])
@@ -39,14 +47,17 @@ class lineTest(unittest.TestCase):
 
 
 class nodeTest(unittest.TestCase):
-    def testNodeCounter(self):
-        self.assertEqual(len(Node.nodes), 2)
-        node = Node("testNode3", [])
-        self.assertEqual(len(Node.nodes), 3)
+    def test_NodeCounter(self):
+        self.assertEqual(len(Node.nodes), 4)
+        Node("testNode3", [])
+        self.assertEqual(len(Node.nodes), 5)
 
-    def drawLineTest(self):
-        node1 = Node("testNode4", [])
-        node2 = Node("testNode5", [])
+    def test_DrawLine(self):
+        main_window = makeWindow()
+
+        node1 = main_window.addNode("testNode4")
+        node2 = main_window.addNode("testNode5")
+        self.assertEqual(len(node1.lines), 0)
         node1.drawLine(node1, node2)
         self.assertEqual(len(node1.lines), 1)
         self.assertEqual(len(node1.lines), len(node2.lines))

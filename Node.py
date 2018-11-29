@@ -24,11 +24,8 @@ class Node:
         self.canvas = self.label = None
         self.title = title
         self.isRole = isRole
+        self.nodes.append(self)
         self.makeNode(properties, loadProperties)
-
-    def __del__(self):
-        print("Hoi")
-        Node.nodes.remove(self)
 
     def makeNode(self, properties, loadProperties):
         if loadProperties and "id" in loadProperties:
@@ -46,8 +43,6 @@ class Node:
 
             if self.isRole:
                 self.properties["ROLE"] = StringVar()
-
-        Node.nodes.append(self)
 
     def attach(self, canvas, x=30, y=20):
         if canvas is self.canvas:
@@ -73,14 +68,8 @@ class Node:
                 if line.a == b and line.b == a:
                     return
 
-            try:
-                x1 = a.x_orig + a.x_off
-                y1 = a.y_orig + a.y_off
-                x2 = b.x_orig + b.x_off
-                y2 = b.y_orig + b.y_off
-            except:
-                x1, y1 = a.canvas.coords(a.canvas_id)
-                x2, y2 = b.canvas.coords(b.canvas_id)
+            x1, y1 = a.canvas.coords(a.canvas_id)
+            x2, y2 = b.canvas.coords(b.canvas_id)
 
             lineid = self.canvas.create_line(x1, y1, x2, y2)
             line = Line(lineid, a, b, [x1, y1, x2, y2])
