@@ -117,7 +117,6 @@ class Window:
             del node
         Node.nodes = []
 
-
     def getChildren(self, node, added):
         children = []
         for line in node.lines:
@@ -134,7 +133,6 @@ class Window:
             return sorted(children, key=operator.attrgetter('x_orig'))
         else:
             return [child for _, child in sorted(zip([x for x, y in [a.canvas.coords(a.canvas_id) for a in children]], children))]
-
 
     def loadTree(self, loadRole=False):
         self.newTree()
@@ -176,16 +174,20 @@ class Window:
         with open("roles/" + role.title + ".json") as f:
             data = json.load(f)
 
-        roleRoot = None
-        for id, node in data["data"]["trees"][0]["nodes"].items():
-            if not roleRoot:
-                roleRoot = globals.randomID()
-                changedIDs[id] = roleRoot
+        roleRoot = globals.randomID()
+        roleList[roleRoot] = {"id": roleRoot}
+        roleList[roleRoot]["title"] = "Role"
+        roleList[roleRoot]["name"] = role.properties["ROLE"].get()
+        childRoot = globals.randomID()
+        changedIDs[data["data"]["trees"][0]["root"]] = childRoot
+        roleList[roleRoot]["children"] = [childRoot]
 
+        for id, node in data["data"]["trees"][0]["nodes"].items():
             if id in [key for key, _ in changedIDs.items()]:
                 id = changedIDs[id]
             else:
-                id = globals.randomID()
+                changedIDs[id] = globals.randomID()
+                id = changedIDs[id]
 
             if "children" in node:
                 for i, child in enumerate(node["children"]):
@@ -299,8 +301,8 @@ class Window:
                                 id, roleChildren = self.addRole(child)
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
-                                    if "ROLE" in curr_node.properties and "properties" in roleChild:
-                                        roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
+                                    if "ROLE" in child.properties and "properties" in roleChild:
+                                        roleChild["properties"]["ROLE"] = child.properties["ROLE"].get()
 
                                     if "location" in roleChild:
                                         del roleChild["location"]
