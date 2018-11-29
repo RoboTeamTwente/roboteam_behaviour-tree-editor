@@ -16,7 +16,6 @@ def dnd_start(source, event):
 
 class Node:
 
-    nodeCounter = 0
     nodes = []
 
     def __init__(self, title, properties, loadProperties=None, isRole=False):
@@ -27,12 +26,15 @@ class Node:
         self.makeNode(properties, loadProperties)
         self.isRole = isRole
 
+    def __del__(self):
+        print("Hoi")
+        Node.nodes.remove(self)
+
     def makeNode(self, properties, loadProperties):
         if loadProperties and "id" in loadProperties:
             self.id = loadProperties["id"]
         else:
             self.id = globals.randomID()
-            Node.nodeCounter += 1
 
         if loadProperties and "properties" in loadProperties:
             for prop, value in loadProperties["properties"].items():

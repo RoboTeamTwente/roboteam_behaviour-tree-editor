@@ -19,6 +19,7 @@ import random
 import string
 import globals
 
+
 class Window:
     types = dict()
     nodes = dict()
@@ -117,7 +118,6 @@ class Window:
             del node
         Node.nodes = []
 
-
     def getChildren(self, node, added):
         children = []
         for line in node.lines:
@@ -134,7 +134,6 @@ class Window:
             return sorted(children, key=operator.attrgetter('x_orig'))
         else:
             return [child for _, child in sorted(zip([x for x, y in [a.canvas.coords(a.canvas_id) for a in children]], children))]
-
 
     def loadTree(self, loadRole=False):
         self.newTree()
