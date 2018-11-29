@@ -24,8 +24,8 @@ class Node:
         self.properties = {}
         self.canvas = self.label = None
         self.title = title
-        self.makeNode(properties, loadProperties)
         self.isRole = isRole
+        self.makeNode(properties, loadProperties)
 
     def makeNode(self, properties, loadProperties):
         if loadProperties and "id" in loadProperties:
@@ -41,6 +41,9 @@ class Node:
         else:
             for prop in properties:
                 self.properties[prop] = StringVar()
+
+            if self.isRole:
+                self.properties["ROLE"] = StringVar()
 
         Node.nodes.append(self)
 
