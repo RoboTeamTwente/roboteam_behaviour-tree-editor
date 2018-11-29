@@ -11,7 +11,7 @@ import globals
 
 
 def getNodes():
-    DIR = "config_files/"
+    DIR = globals.PROJECT_DIR + "/config_files/"
 
     types = defaultdict(list)
     nodes = defaultdict(list)
@@ -29,7 +29,6 @@ def getNodes():
 
 
 def main():
-    globals.initialize()
     root = Tk()
     root.minsize(width=750, height=500)
     root.winfo_toplevel().title("RTT Behavior Tree Editor")
