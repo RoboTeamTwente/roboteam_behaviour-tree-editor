@@ -23,8 +23,8 @@ class Node:
         self.properties = {}
         self.canvas = self.label = None
         self.title = title
-        self.makeNode(properties, loadProperties)
         self.isRole = isRole
+        self.makeNode(properties, loadProperties)
 
     def __del__(self):
         print("Hoi")
@@ -43,6 +43,9 @@ class Node:
         else:
             for prop in properties:
                 self.properties[prop] = StringVar()
+
+            if self.isRole:
+                self.properties["ROLE"] = StringVar()
 
         Node.nodes.append(self)
 
@@ -64,6 +67,12 @@ class Node:
 
     def drawLine(self, a, b):
         if not a == b:
+            for line in Line.lines:
+                if line.a == a and line.b == b:
+                    return
+                if line.a == b and line.b == a:
+                    return
+
             try:
                 x1 = a.x_orig + a.x_off
                 y1 = a.y_orig + a.y_off

@@ -35,6 +35,7 @@ class Window:
 
         self.topWindow = PanedWindow(self.window)
         self.topWindow.pack(fill=X)
+
         self.treeName = StringVar()
         self.topWindow.add(Label(self.topWindow, text="Name"))
         self.nameEntry = Entry(self.topWindow, textvariable=self.treeName)
@@ -79,9 +80,21 @@ class Window:
         self.menubar = Menu(self.root)
         self.menubar.add_command(label="New", command=lambda: self.newTree())
         self.menubar.add_command(label="Save tree", command=lambda: self.saveTree())
-        self.menubar.add_command(label="Load tree", command=lambda: self.loadTree())
+
+        self.loadmenu = Menu(self.menubar, tearoff=0)
+        for file in sorted([f for f in os.listdir("saved_trees") if f != ".keep"]):
+            file = file[:-5]
+            self.loadmenu.add_command(label=file, command=lambda file=file: self.loadTree(file))
+        self.menubar.add_cascade(label="Load tree", menu=self.loadmenu)
+
         self.menubar.add_command(label="Save role", command=lambda: self.saveTree(True))
-        self.menubar.add_command(label="Load role", command=lambda: self.loadTree(True))
+
+        self.loadRoleMenu = Menu(self.menubar, tearoff=0)
+        for file in sorted([f for f in os.listdir("roles") if f != ".keep"]):
+            file = file[:-5]
+            self.loadRoleMenu.add_command(label=file, command=lambda file=file: self.loadTree(file, loadRole=True))
+        self.menubar.add_cascade(label="Load role", menu=self.loadRoleMenu)
+
         self.menubar.add_command(label="Export JSON", command=lambda: self.saveJSON())
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
@@ -135,9 +148,8 @@ class Window:
         else:
             return [child for _, child in sorted(zip([x for x, y in [a.canvas.coords(a.canvas_id) for a in children]], children))]
 
-    def loadTree(self, loadRole=False):
+    def loadTree(self, name, loadRole=False):
         self.newTree()
-        name = self.treeName.get()
         self.e.focus()
         if loadRole:
             file = 'roles/' + name + '.json'
@@ -175,16 +187,20 @@ class Window:
         with open("roles/" + role.title + ".json") as f:
             data = json.load(f)
 
-        roleRoot = None
-        for id, node in data["data"]["trees"][0]["nodes"].items():
-            if not roleRoot:
-                roleRoot = globals.randomID()
-                changedIDs[id] = roleRoot
+        roleRoot = globals.randomID()
+        roleList[roleRoot] = {"id": roleRoot}
+        roleList[roleRoot]["title"] = "Role"
+        roleList[roleRoot]["name"] = role.properties["ROLE"].get()
+        childRoot = globals.randomID()
+        changedIDs[data["data"]["trees"][0]["root"]] = childRoot
+        roleList[roleRoot]["children"] = [childRoot]
 
+        for id, node in data["data"]["trees"][0]["nodes"].items():
             if id in [key for key, _ in changedIDs.items()]:
                 id = changedIDs[id]
             else:
-                id = globals.randomID()
+                changedIDs[id] = globals.randomID()
+                id = changedIDs[id]
 
             if "children" in node:
                 for i, child in enumerate(node["children"]):
@@ -283,7 +299,7 @@ class Window:
                     que.put(root_children[0])
                     added.append(n)
                 else:
-                    exit("Root has more than 1 child")
+                    print("Error: root does not have only 1 child")
 
                 while not que.empty():
                     node_dic = {}
@@ -298,8 +314,8 @@ class Window:
                                 id, roleChildren = self.addRole(child)
                                 node_dic["children"].append(id)
                                 for id, roleChild in roleChildren.items():
-                                    if "ROLE" in curr_node.properties and "properties" in roleChild:
-                                        roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
+                                    if "ROLE" in child.properties and "properties" in roleChild:
+                                        roleChild["properties"]["ROLE"] = child.properties["ROLE"].get()
 
                                     if "location" in roleChild:
                                         del roleChild["location"]
@@ -318,7 +334,8 @@ class Window:
                         else:
                             node_dic["properties"] = {}
                             for property, value in properties.items():
-                                node_dic["properties"][property] = value.get()
+                                if value.get():
+                                    node_dic["properties"][property] = value.get()
 
                     tree["nodes"][curr_node.id] = node_dic
                     added.append(curr_node)
