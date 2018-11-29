@@ -284,7 +284,7 @@ class Window:
                     que.put(root_children[0])
                     added.append(n)
                 else:
-                    exit("Root has more than 1 child")
+                    print("Error: root does not have only 1 child")
 
                 while not que.empty():
                     node_dic = {}

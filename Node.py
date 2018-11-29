@@ -62,6 +62,12 @@ class Node:
 
     def drawLine(self, a, b):
         if not a == b:
+            for line in Line.lines:
+                if line.a == a and line.b == b:
+                    return
+                if line.a == b and line.b == a:
+                    return
+
             try:
                 x1 = a.x_orig + a.x_off
                 y1 = a.y_orig + a.y_off
