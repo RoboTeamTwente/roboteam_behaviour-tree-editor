@@ -34,6 +34,7 @@ class Window:
 
         self.topWindow = PanedWindow(self.window)
         self.topWindow.pack(fill=X)
+
         self.treeName = StringVar()
         self.topWindow.add(Label(self.topWindow, text="Name"))
         self.nameEntry = Entry(self.topWindow, textvariable=self.treeName)
@@ -78,9 +79,21 @@ class Window:
         self.menubar = Menu(self.root)
         self.menubar.add_command(label="New", command=lambda: self.newTree())
         self.menubar.add_command(label="Save tree", command=lambda: self.saveTree())
-        self.menubar.add_command(label="Load tree", command=lambda: self.loadTree())
+
+        self.loadmenu = Menu(self.menubar, tearoff=0)
+        for file in sorted([f for f in os.listdir("saved_trees") if f != ".keep"]):
+            file = file[:-5]
+            self.loadmenu.add_command(label=file, command=lambda file=file: self.loadTree(file))
+        self.menubar.add_cascade(label="Load tree", menu=self.loadmenu)
+
         self.menubar.add_command(label="Save role", command=lambda: self.saveTree(True))
-        self.menubar.add_command(label="Load role", command=lambda: self.loadTree(True))
+
+        self.loadRoleMenu = Menu(self.menubar, tearoff=0)
+        for file in sorted([f for f in os.listdir("roles") if f != ".keep"]):
+            file = file[:-5]
+            self.loadRoleMenu.add_command(label=file, command=lambda file=file: self.loadTree(file, loadRole=True))
+        self.menubar.add_cascade(label="Load role", menu=self.loadRoleMenu)
+
         self.menubar.add_command(label="Export JSON", command=lambda: self.saveJSON())
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
@@ -134,9 +147,8 @@ class Window:
         else:
             return [child for _, child in sorted(zip([x for x, y in [a.canvas.coords(a.canvas_id) for a in children]], children))]
 
-    def loadTree(self, loadRole=False):
+    def loadTree(self, name, loadRole=False):
         self.newTree()
-        name = self.treeName.get()
         self.e.focus()
         if loadRole:
             file = 'roles/' + name + '.json'
