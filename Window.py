@@ -321,7 +321,8 @@ class Window:
                         else:
                             node_dic["properties"] = {}
                             for property, value in properties.items():
-                                node_dic["properties"][property] = value.get()
+                                if value.get():
+                                    node_dic["properties"][property] = value.get()
 
                     tree["nodes"][curr_node.id] = node_dic
                     added.append(curr_node)
