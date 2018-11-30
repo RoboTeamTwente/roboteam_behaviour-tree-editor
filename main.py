@@ -11,7 +11,7 @@ import globals
 
 
 def getNodes():
-    DIR = globals.PROJECT_DIR + "/config_files/"
+    DIR = globals.PROJECT_DIR + "config_files/"
 
     types = defaultdict(list)
     nodes = defaultdict(list)

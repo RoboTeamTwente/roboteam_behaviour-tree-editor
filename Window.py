@@ -86,7 +86,7 @@ class Window:
 
         # Create tree loading menu with all saved_trees as buttons
         self.loadmenu = Menu(self.menubar, tearoff=0)
-        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "/saved_trees") if f != ".keep"]):
+        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "saved_trees") if f != ".keep"]):
             file = file[:-5]
             self.loadmenu.add_command(label=file, command=lambda file=file: self.loadTree(file))
         self.menubar.add_cascade(label="Load tree", menu=self.loadmenu)
@@ -95,7 +95,7 @@ class Window:
 
         # Create role loading menu with all roles as buttons
         self.loadRoleMenu = Menu(self.menubar, tearoff=0)
-        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "/roles") if f != ".keep"]):
+        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "roles") if f != ".keep"]):
             file = file[:-5]
             self.loadRoleMenu.add_command(label=file, command=lambda file=file: self.loadTree(file, loadRole=True))
         self.menubar.add_cascade(label="Load role", menu=self.loadRoleMenu)
@@ -109,7 +109,7 @@ class Window:
     # Function to show/hide nodes belonging to a certain type
     def toggleNodes(self, type, nodeWindow):
         if type == "roles":
-            nodes = [file[:-5] for file in os.listdir(globals.PROJECT_DIR + "/roles/")]
+            nodes = [file[:-5] for file in os.listdir(globals.PROJECT_DIR + "roles/")]
             isRole = True
         else:
             nodes = Window.types[type]
@@ -161,9 +161,9 @@ class Window:
         self.newTree()
         self.e.focus()
         if loadRole:
-            file = globals.PROJECT_DIR + '/roles/' + name + '.json'
+            file = globals.PROJECT_DIR + 'roles/' + name + '.json'
         else:
-            file = globals.PROJECT_DIR + '/saved_trees/' + name + '.json'
+            file = globals.PROJECT_DIR + 'saved_trees/' + name + '.json'
         with open(file, 'r') as f:
             data = json.load(f)
 
@@ -194,7 +194,7 @@ class Window:
     def loadRole(self, role):
         roleList = {}
         changedIDs = {}     # Dictionary to keep track of randomly changed IDs
-        with open(globals.PROJECT_DIR + "/roles/" + role.title + ".json") as f:
+        with open(globals.PROJECT_DIR + "roles/" + role.title + ".json") as f:
             data = json.load(f)
 
         # Add Role node and add root as child of Role node
@@ -277,7 +277,7 @@ class Window:
         json_file["data"] = data
 
         if saveRole:
-            file = globals.PROJECT_DIR + "/roles/" + name + ".json"
+            file = globals.PROJECT_DIR + "roles/" + name + ".json"
 
             with open(file, 'w') as f:
                 json.dump(json_file, f)
@@ -288,7 +288,7 @@ class Window:
 
             self.loadmenu.add_command(label=name, command=lambda file=name: self.loadTree(file, loadRole=True))
         else:
-            file = globals.PROJECT_DIR + "/saved_trees/" + name + ".json"
+            file = globals.PROJECT_DIR + "saved_trees/" + name + ".json"
 
             with open(file, 'w') as f:
                 json.dump(json_file, f)
@@ -363,7 +363,7 @@ class Window:
         data["trees"].append(tree)
         json_file["data"] = data
 
-        file = globals.PROJECT_DIR + "/jsons/" + name + ".json"
+        file = globals.PROJECT_DIR + "jsons/" + name + ".json"
 
         with open(file, 'w') as f:
             json.dump(json_file, f)
