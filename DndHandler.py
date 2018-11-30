@@ -101,6 +101,7 @@ class DndHandler:
                     self.source.lines.append(line)
                     node.lines.append(line)
 
+                    self.source.drawing_line = None
                     self.finish(event, 1)
                     return
 
