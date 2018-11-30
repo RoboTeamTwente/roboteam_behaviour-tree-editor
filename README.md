@@ -10,6 +10,9 @@ tkinter
 
 numpy
 
+# Setup
+Run setup.sh and the shell script "b3e.sh" will be generated in the main RTT folder. This script can be ran to launch the behavior tree editor.
+
 # How-to draw trees
 Click a node at the left to spawn it, it can be moved by simply dragging.
 
