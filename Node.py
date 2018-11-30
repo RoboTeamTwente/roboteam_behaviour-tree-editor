@@ -105,9 +105,11 @@ class Node:
     def press(self, event):
         if keyboard.is_pressed("d"):
             if dnd_start(self, event):
+                x, y = self.where(self.canvas, event)
+                x += self.x_off
+                y += self.y_off
                 coords = self.canvas.coords(self.canvas_id)
-                Node.drawing_line = self.canvas.create_line(coords[0], coords[1], event.x + self.x_orig, event.y + self.y_orig)
-                print(coords, event.x, event.y)
+                Node.drawing_line = self.canvas.create_line(coords[0] + self.x_off, coords[1] + self.y_off, x, y)
         else:
             if dnd_start(self, event):
                 # where the pointer is relative to the label widget:
