@@ -6,6 +6,8 @@ except:
 from Line import Line
 from DndHandler import DndHandler
 import globals
+import keyboard
+
 
 def dnd_start(source, event):
     h = DndHandler(source, event)
@@ -18,6 +20,7 @@ class Node:
 
     nodeCounter = 0
     nodes = []
+    drawing_line = None
 
     def __init__(self, title, properties, loadProperties=None, isRole=False):
         self.lines = []
@@ -100,12 +103,18 @@ class Node:
         label.destroy()
 
     def press(self, event):
-        if dnd_start(self, event):
-            # where the pointer is relative to the label widget:
-            self.x_off = event.x
-            self.y_off = event.y
-            # where the widget is relative to the canvas:
-            self.x_orig, self.y_orig = self.canvas.coords(self.canvas_id)
+        if keyboard.is_pressed("d"):
+            if dnd_start(self, event):
+                coords = self.canvas.coords(self.canvas_id)
+                Node.drawing_line = self.canvas.create_line(coords[0], coords[1], event.x + self.x_orig, event.y + self.y_orig)
+                print(coords, event.x, event.y)
+        else:
+            if dnd_start(self, event):
+                # where the pointer is relative to the label widget:
+                self.x_off = event.x
+                self.y_off = event.y
+                # where the widget is relative to the canvas:
+                self.x_orig, self.y_orig = self.canvas.coords(self.canvas_id)
 
     def move(self, event):
         x, y = self.where(self.canvas, event)

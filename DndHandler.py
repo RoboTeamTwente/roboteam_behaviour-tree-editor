@@ -58,6 +58,8 @@ class DndHandler:
         globals.main_window.spawnProperties(self.source)
 
     def on_motion(self, event):
+        if keyboard.is_pressed('d'):
+            print("HOI")
         x, y = event.x_root, event.y_root
         target_widget = self.initial_widget.winfo_containing(x, y)
         source = self.source
