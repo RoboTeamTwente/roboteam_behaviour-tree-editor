@@ -159,6 +159,7 @@ class Window:
 
     def loadTree(self, name, loadRole=False):
         self.newTree()
+        self.treeName.set(name)
         self.e.focus()
         if loadRole:
             file = globals.PROJECT_DIR + 'roles/' + name + '.json'
@@ -192,6 +193,8 @@ class Window:
 
     # Load role in order to add to JSON
     def loadRole(self, role):
+        self.treeName.set(role.title)
+        self.e.focus()
         roleList = {}
         changedIDs = {}     # Dictionary to keep track of randomly changed IDs
         with open(globals.PROJECT_DIR + "roles/" + role.title + ".json") as f:
