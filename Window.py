@@ -192,7 +192,7 @@ class Window:
                     first_node.drawLine(first_node, second_node)
 
     # Load role in order to add to JSON
-    def loadRole(self, role):
+    def loadRole(self, role, roleRoot):
         self.treeName.set(role.title)
         self.e.focus()
         roleList = {}
@@ -201,7 +201,6 @@ class Window:
             data = json.load(f)
 
         # Add Role node and add root as child of Role node
-        roleRoot = globals.randomID()
         roleList[roleRoot] = {"id": roleRoot}
         roleList[roleRoot]["title"] = "Role"
         roleList[roleRoot]["name"] = role.properties["ROLE"].get()
@@ -226,7 +225,7 @@ class Window:
             node["id"] = id
             roleList[id] = node
 
-        return roleRoot, roleList
+        return roleList
 
     # Save tree so it can be loaded in again
     def saveTree(self, saveRole=False):
@@ -304,6 +303,7 @@ class Window:
         name = self.treeName.get()
         que = queue.Queue()
         added = []
+        changedIDs = {}
 
         json_file = {"name": name}
         data = {"trees": []}
@@ -324,7 +324,7 @@ class Window:
                     node_dic = {}
                     curr_node = que.get()
                     if curr_node.isRole:
-                        _, roleChildren = self.loadRole(curr_node)
+                        roleChildren = self.loadRole(curr_node, changedIDs[curr_node.id])
                         for id, roleChild in roleChildren.items():
                             # Inherit ROLE from the role node
                             if "ROLE" in curr_node.properties and "properties" in roleChild:
@@ -342,7 +342,11 @@ class Window:
                             node_dic["children"] = []
                             for child in children:
                                 que.put(child)
-                                node_dic["children"].append(child.id)
+                                if child.isRole:
+                                    changedIDs[child.id] = globals.randomID()
+                                    node_dic["children"].append(changedIDs[child.id])
+                                else:
+                                    node_dic["children"].append(child.id)
 
                         properties = curr_node.properties
                         if properties:
@@ -357,7 +361,9 @@ class Window:
                                     if value.get():
                                         node_dic["properties"][property] = value.get()
 
-                        tree["nodes"][curr_node.id] = node_dic
+                        if curr_node.title != "Root":
+                            tree["nodes"][curr_node.id] = node_dic
+
                         added.append(curr_node)
 
         data["trees"].append(tree)
