@@ -314,7 +314,13 @@ class Window:
                 root_children = self.getChildren(n, added)
                 # Check if the root only has 1 child
                 if len(root_children) == 1:
-                    tree["root"] = root_children[0].id
+
+                    if root_children[0].isRole:
+                        changedIDs[root_children[0].id] = globals.randomID()
+                        tree["root"] = changedIDs[root_children[0].id]
+                    else:
+                        tree["root"] = root_children[0].id
+
                     tree["nodes"] = {}
                     que.put(n)
                 else:
@@ -343,7 +349,8 @@ class Window:
                             for child in children:
                                 que.put(child)
                                 if child.isRole:
-                                    changedIDs[child.id] = globals.randomID()
+                                    if child.id not in changedIDs:
+                                        changedIDs[child.id] = globals.randomID()
                                     node_dic["children"].append(changedIDs[child.id])
                                 else:
                                     node_dic["children"].append(child.id)
