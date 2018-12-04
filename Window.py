@@ -130,16 +130,18 @@ class Window:
 
     # Removes all nodes and starts with fresh canvas
     def newTree(self):
-        for child in self.canvas.winfo_children():
-            child.destroy()
+        for line in Line.lines.copy():
+            self.canvas.after(10, self.canvas.delete, line.id)
+            line.delete()
 
-        for node in Node.nodes:
-            for line in Line.lines:
-                node.canvas.after(10, node.canvas.delete, line.id)
+        for node in Node.nodes.copy():
+            for line in node.lines.copy():
+                self.canvas.after(10, self.canvas.delete, line.id)
                 line.delete()
-            Line.lines = []
             node.delete()
-        Node.nodes = []
+
+        for child in self.canvas.winfo_children().copy():
+            child.destroy()
 
     # Get all children of specific node, and keep track of which are added
     def getChildren(self, node, added):

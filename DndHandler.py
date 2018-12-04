@@ -2,6 +2,7 @@ import datetime
 import globals
 import keyboard
 
+
 class DndHandler:
 
     root = None
@@ -50,18 +51,18 @@ class DndHandler:
                 DndHandler.clicked = []
 
         if keyboard.is_pressed('r'):
-            for line in self.source.lines:
+            for line in self.source.lines.copy():
                 self.source.canvas.after(10, self.source.canvas.delete, line.id)
+                self.source.lines.remove(line)
                 line.delete()
 
-            for node in self.source.nodes:
+            for node in self.source.nodes.copy():
                 for line in node.lines:
                     if line.a == self.source or line.b == self.source:
-                        node.lines.remove(line)
                         line.delete()
 
-            self.source.delete()
             self.initial_widget.destroy()
+            self.source.delete()
             return True
 
         globals.main_window.spawnProperties(self.source)
@@ -106,7 +107,7 @@ class DndHandler:
     def cancel(self, event=None):
         self.finish(event, 0)
 
-    def finish(self, event, commit=0, deleted = False):
+    def finish(self, event, commit=0, deleted=False):
         target = self.target
         source = self.source
         widget = self.initial_widget
