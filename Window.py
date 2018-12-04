@@ -152,7 +152,8 @@ class Window:
                 if line.a not in added:
                     children.append(line.a)
             else:
-                exit("Line error")
+                messagebox.showinfo('Error 102', 'Error 102: Cry for help!')
+                return
 
         if "x_orig" in children:
             return sorted(children, key=operator.attrgetter('x_orig'))
@@ -249,7 +250,8 @@ class Window:
                     que.put(root_children[0])
                     added.append(n)
                 else:
-                    exit("Root has more than 1 child")
+                    messagebox.showinfo('Error 592', 'Error 592: Root has more or less than 1 child')
+                    return
 
                 while not que.empty():
                     node_dic = {}
@@ -329,7 +331,8 @@ class Window:
                     tree["nodes"] = {}
                     que.put(n)
                 else:
-                    print("Error: root does not have only 1 child")
+                    messagebox.showinfo('Error 592', 'Error 592: Root has more or less than 1 child')
+                    return
 
                 while not que.empty():
                     node_dic = {}
