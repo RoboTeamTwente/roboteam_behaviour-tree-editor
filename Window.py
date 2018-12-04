@@ -1,7 +1,9 @@
 try:
     from tkinter import *
+    from tkinter import messagebox
 except:
     from Tkinter import *
+    import tkMessageBox as messagebox
 
 from Node import Node
 from Line import Line
@@ -289,6 +291,8 @@ class Window:
             newNode.pack(fill=BOTH)
 
             self.loadmenu.add_command(label=name, command=lambda file=name: self.loadTree(file, loadRole=True))
+            messagebox.showinfo('Role saved successfully!', 'Role successfully saved in "roles" as ' + name + '.json')
+
         else:
             file = globals.PROJECT_DIR + "saved_trees/" + name + ".json"
 
@@ -297,6 +301,7 @@ class Window:
             os.chmod(file, 0o777)
 
             self.loadmenu.add_command(label=name, command=lambda file=name: self.loadTree(file))
+            messagebox.showinfo('Tree saved successfully!', 'Tree successfully saved in "saved_trees" as ' + name + '.json')
 
     # Save tree as interpretable JSON
     def saveJSON(self):
@@ -381,6 +386,8 @@ class Window:
         with open(file, 'w') as f:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
+
+        messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to "jsons" as ' + name + '.json')
 
     # Add custom property
     def addProperty(self, node):
