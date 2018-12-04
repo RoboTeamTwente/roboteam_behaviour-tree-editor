@@ -96,6 +96,16 @@ class DndHandler:
                     new_target.dnd_enter(source, event)
                     self.target = new_target
 
+    def checkValidLine(self, node1, node2):
+        if node1 == node2:
+            return False
+
+        for line in Line.lines:
+            if (line.a == node1 and line.b == node2) or (line.a == node2 and line.b == node1):
+                return False
+
+        return True
+
     def on_release(self, event):
         deleted = False
         ms = (datetime.datetime.now() - self.time).microseconds / 1000
@@ -108,13 +118,14 @@ class DndHandler:
             for node in self.source.nodes:
                 x1, y1, x2, y2 = node.canvas.bbox(node.canvas_id)
                 if (x2 > line_x > x1) and (y2 > line_y > y1):
-                    line = Line(self.source.drawing_line, self.source, node, self.source.canvas.coords(self.source.drawing_line))
-                    self.source.lines.append(line)
-                    node.lines.append(line)
+                    if self.checkValidLine(self.source, node):
+                        line = Line(self.source.drawing_line, self.source, node, self.source.canvas.coords(self.source.drawing_line))
+                        self.source.lines.append(line)
+                        node.lines.append(line)
 
-                    self.source.drawing_line = None
-                    self.finish(event, 1)
-                    return
+                        self.source.drawing_line = None
+                        self.finish(event, 1)
+                        return
 
             self.source.canvas.delete(self.source.drawing_line)
             self.source.drawing_line = None
