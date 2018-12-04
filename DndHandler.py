@@ -57,6 +57,7 @@ class DndHandler:
             for node in self.source.nodes:
                 for line in node.lines:
                     if line.a == self.source or line.b == self.source:
+                        node.lines.remove(line)
                         line.delete()
 
             self.source.delete()
