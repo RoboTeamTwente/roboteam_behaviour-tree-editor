@@ -136,9 +136,9 @@ class Window:
         for node in Node.nodes:
             for line in Line.lines:
                 node.canvas.after(10, node.canvas.delete, line.id)
-                del line
+                line.delete()
             Line.lines = []
-            del node
+            node.delete()
         Node.nodes = []
 
     # Get all children of specific node, and keep track of which are added
@@ -243,6 +243,7 @@ class Window:
         for n in Node.nodes:
             if n.title == "Root":
                 root_children = self.getChildren(n, added)
+                print(root_children)
                 # Check if the root only has 1 child
                 if len(root_children) == 1:
                     tree["root"] = root_children[0].id
@@ -250,7 +251,7 @@ class Window:
                     que.put(root_children[0])
                     added.append(n)
                 else:
-                    messagebox.showinfo('Error 592', 'Error 592: Root has more or less than 1 child')
+                    messagebox.showinfo('Error 594', 'Error 594: Root has more or less than 1 child')
                     return
 
                 while not que.empty():

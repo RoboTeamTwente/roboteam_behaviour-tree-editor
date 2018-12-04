@@ -47,6 +47,21 @@ class Node:
 
         Node.nodes.append(self)
 
+    def __del__(self):
+        print("Node successfully deleted")
+
+    def delete(self):
+        if self in Node.nodes:
+            Node.nodes.remove(self)
+
+        for node in Node.nodes:
+            for line in node.lines:
+                if line.a == self or line.b == self:
+                    node.lines.remove(line)
+                    line.delete()
+
+        del self
+
     def attach(self, canvas, x=30, y=20):
         if canvas is self.canvas:
             self.canvas.coords(self.canvas_id, x, y)

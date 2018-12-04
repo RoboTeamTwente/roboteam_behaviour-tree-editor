@@ -48,10 +48,19 @@ class DndHandler:
                 DndHandler.clicked.append(self.source)
                 self.source.drawLine(DndHandler.clicked[0], DndHandler.clicked[1])
                 DndHandler.clicked = []
+
         if keyboard.is_pressed('r'):
             for line in self.source.lines:
                 self.source.canvas.after(10, self.source.canvas.delete, line.id)
-                del line
+                line.delete()
+
+            for node in self.source.nodes:
+                for line in node.lines:
+                    if line.a == self.source or line.b == self.source:
+                        print("FOUND!")
+                        line.delete()
+
+            self.source.delete()
             self.initial_widget.destroy()
             return
 
