@@ -13,12 +13,12 @@ class Line:
         print("Line successfully deleted!")
 
     def delete(self):
-        for node in self.a.nodes.copy():
+        for node in list(self.a.nodes):
             for line in node.lines:
                 if line == self:
                     node.lines.remove(self)
 
-        for node in self.b.nodes.copy():
+        for node in list(self.b.nodes):
             for line in node.lines:
                 if line == self:
                     node.lines.remove(self)

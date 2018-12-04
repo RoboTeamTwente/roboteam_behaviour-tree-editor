@@ -44,12 +44,12 @@ class DndHandler:
 
     def click(self):
         if keyboard.is_pressed('r'):
-            for line in self.source.lines.copy():
+            for line in list(self.source.lines):
                 self.source.canvas.after(10, self.source.canvas.delete, line.id)
                 self.source.lines.remove(line)
                 line.delete()
 
-            for node in self.source.nodes.copy():
+            for node in list(self.source.nodes):
                 for line in node.lines:
                     if line.a == self.source or line.b == self.source:
                         line.delete()
