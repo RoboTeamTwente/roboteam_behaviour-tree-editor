@@ -51,9 +51,14 @@ class Node:
         print("Node successfully deleted")
 
     def delete(self):
-        print("Deleting node")
         if self in Node.nodes:
             Node.nodes.remove(self)
+
+        for node in Node.nodes:
+            for line in node.lines:
+                if line.a == self or line.b == self:
+                    node.lines.remove(line)
+                    line.delete()
 
         del self
 

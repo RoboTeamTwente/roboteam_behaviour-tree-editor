@@ -136,9 +136,9 @@ class Window:
         for node in Node.nodes:
             for line in Line.lines:
                 node.canvas.after(10, node.canvas.delete, line.id)
-                del line
+                line.delete()
             Line.lines = []
-            del node
+            node.delete()
         Node.nodes = []
 
     # Get all children of specific node, and keep track of which are added
