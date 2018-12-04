@@ -3,6 +3,7 @@ import globals
 import keyboard
 from Line import Line
 
+
 class DndHandler:
 
     root = None
@@ -43,13 +44,23 @@ class DndHandler:
 
     def click(self):
         if keyboard.is_pressed('r'):
-            for line in self.source.lines:
+            for line in self.source.lines.copy():
                 self.source.canvas.after(10, self.source.canvas.delete, line.id)
-                del line
+                self.source.lines.remove(line)
+                line.delete()
+
+            for node in self.source.nodes.copy():
+                for line in node.lines:
+                    if line.a == self.source or line.b == self.source:
+                        line.delete()
+
             self.initial_widget.destroy()
-            return
+            self.source.delete()
+            return True
 
         globals.main_window.spawnProperties(self.source)
+
+        return False
 
     def on_motion(self, event):
         if keyboard.is_pressed('d'):
@@ -86,10 +97,10 @@ class DndHandler:
                     self.target = new_target
 
     def on_release(self, event):
-        print("HOI")
+        deleted = False
         ms = (datetime.datetime.now() - self.time).microseconds / 1000
         if ms < 150:
-            self.click()
+            deleted = self.click()
 
         if self.source.drawing_line:
             _, _, line_x, line_y = self.source.canvas.coords(self.source.drawing_line)
@@ -108,21 +119,22 @@ class DndHandler:
             self.source.canvas.delete(self.source.drawing_line)
             self.source.drawing_line = None
 
-        self.finish(event, 1)
+        self.finish(event, 1, deleted)
 
     def cancel(self, event=None):
         self.finish(event, 0)
 
-    def finish(self, event, commit=0):
+    def finish(self, event, commit=0, deleted=False):
         target = self.target
         source = self.source
         widget = self.initial_widget
         root = self.root
         try:
             del root.__dnd
-            self.initial_widget.unbind(self.release_pattern)
-            self.initial_widget.unbind("<Motion>")
-            widget['cursor'] = self.save_cursor
+            if not deleted:
+                self.initial_widget.unbind(self.release_pattern)
+                self.initial_widget.unbind("<Motion>")
+                widget['cursor'] = self.save_cursor
             self.target = self.source = self.initial_widget = self.root = None
             if target:
                 if commit:

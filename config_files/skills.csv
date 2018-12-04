@@ -1,3 +1,4 @@
-GoToPos,ROLE,x_pos,y_pos
+GoToPos,ROLE,Position,goToBall,random
+GoToPosLuTh,ROLE,Position,goToBall,random
 Kick,ROLE
 Chip,ROLE

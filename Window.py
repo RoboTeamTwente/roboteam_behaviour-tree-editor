@@ -1,7 +1,9 @@
 try:
     from tkinter import *
+    from tkinter import messagebox
 except:
     from Tkinter import *
+    import tkMessageBox as messagebox
 
 from Node import Node
 from Line import Line
@@ -128,16 +130,18 @@ class Window:
 
     # Removes all nodes and starts with fresh canvas
     def newTree(self):
-        for child in self.canvas.winfo_children():
-            child.destroy()
+        for line in Line.lines.copy():
+            self.canvas.after(10, self.canvas.delete, line.id)
+            line.delete()
 
-        for node in Node.nodes:
-            for line in Line.lines:
-                node.canvas.after(10, node.canvas.delete, line.id)
-                del line
-            Line.lines = []
-            del node
-        Node.nodes = []
+        for node in Node.nodes.copy():
+            for line in node.lines.copy():
+                self.canvas.after(10, self.canvas.delete, line.id)
+                line.delete()
+            node.delete()
+
+        for child in self.canvas.winfo_children().copy():
+            child.destroy()
 
     # Get all children of specific node, and keep track of which are added
     def getChildren(self, node, added):
@@ -150,7 +154,8 @@ class Window:
                 if line.a not in added:
                     children.append(line.a)
             else:
-                exit("Line error")
+                messagebox.showinfo('Error 102', 'Error 102: Cry for help!')
+                return
 
         if "x_orig" in children:
             return sorted(children, key=operator.attrgetter('x_orig'))
@@ -159,6 +164,7 @@ class Window:
 
     def loadTree(self, name, loadRole=False):
         self.newTree()
+        self.treeName.set(name)
         self.e.focus()
         if loadRole:
             file = globals.PROJECT_DIR + 'roles/' + name + '.json'
@@ -191,14 +197,15 @@ class Window:
                     first_node.drawLine(first_node, second_node)
 
     # Load role in order to add to JSON
-    def loadRole(self, role):
+    def loadRole(self, role, roleRoot):
+        self.treeName.set(role.title)
+        self.e.focus()
         roleList = {}
         changedIDs = {}     # Dictionary to keep track of randomly changed IDs
         with open(globals.PROJECT_DIR + "roles/" + role.title + ".json") as f:
             data = json.load(f)
 
         # Add Role node and add root as child of Role node
-        roleRoot = globals.randomID()
         roleList[roleRoot] = {"id": roleRoot}
         roleList[roleRoot]["title"] = "Role"
         roleList[roleRoot]["name"] = role.properties["ROLE"].get()
@@ -223,7 +230,7 @@ class Window:
             node["id"] = id
             roleList[id] = node
 
-        return roleRoot, roleList
+        return roleList
 
     # Save tree so it can be loaded in again
     def saveTree(self, saveRole=False):
@@ -238,6 +245,7 @@ class Window:
         for n in Node.nodes:
             if n.title == "Root":
                 root_children = self.getChildren(n, added)
+                print(root_children)
                 # Check if the root only has 1 child
                 if len(root_children) == 1:
                     tree["root"] = root_children[0].id
@@ -245,7 +253,8 @@ class Window:
                     que.put(root_children[0])
                     added.append(n)
                 else:
-                    exit("Root has more than 1 child")
+                    messagebox.showinfo('Error 594', 'Error 594: Root has more or less than 1 child')
+                    return
 
                 while not que.empty():
                     node_dic = {}
@@ -287,6 +296,8 @@ class Window:
             newNode.pack(fill=BOTH)
 
             self.loadmenu.add_command(label=name, command=lambda file=name: self.loadTree(file, loadRole=True))
+            messagebox.showinfo('Role saved successfully!', 'Role successfully saved in "roles" as ' + name + '.json')
+
         else:
             file = globals.PROJECT_DIR + "saved_trees/" + name + ".json"
 
@@ -295,12 +306,14 @@ class Window:
             os.chmod(file, 0o777)
 
             self.loadmenu.add_command(label=name, command=lambda file=name: self.loadTree(file))
+            messagebox.showinfo('Tree saved successfully!', 'Tree successfully saved in "saved_trees" as ' + name + '.json')
 
     # Save tree as interpretable JSON
     def saveJSON(self):
         name = self.treeName.get()
         que = queue.Queue()
         added = []
+        changedIDs = {}
 
         json_file = {"name": name}
         data = {"trees": []}
@@ -311,54 +324,65 @@ class Window:
                 root_children = self.getChildren(n, added)
                 # Check if the root only has 1 child
                 if len(root_children) == 1:
-                    tree["root"] = root_children[0].id
+
+                    if root_children[0].isRole:
+                        changedIDs[root_children[0].id] = globals.randomID()
+                        tree["root"] = changedIDs[root_children[0].id]
+                    else:
+                        tree["root"] = root_children[0].id
+
                     tree["nodes"] = {}
-                    que.put(root_children[0])
-                    added.append(n)
+                    que.put(n)
                 else:
-                    print("Error: root does not have only 1 child")
+                    messagebox.showinfo('Error 592', 'Error 592: Root has more or less than 1 child')
+                    return
 
                 while not que.empty():
                     node_dic = {}
                     curr_node = que.get()
-                    node_dic["id"] = curr_node.id
-                    node_dic["title"] = curr_node.title
-                    children = self.getChildren(curr_node, added)
-                    if children:
-                        node_dic["children"] = []
-                        for child in children:
-                            # If child is role node, replace it by it's matching role tree
-                            if child.isRole:
-                                id, roleChildren = self.loadRole(child)
-                                node_dic["children"].append(id)
-                                for id, roleChild in roleChildren.items():
-                                    # Inherit ROLE from the role node
-                                    if "ROLE" in child.properties and "properties" in roleChild:
-                                        roleChild["properties"]["ROLE"] = child.properties["ROLE"].get()
+                    if curr_node.isRole:
+                        roleChildren = self.loadRole(curr_node, changedIDs[curr_node.id])
+                        for id, roleChild in roleChildren.items():
+                            # Inherit ROLE from the role node
+                            if "ROLE" in curr_node.properties and "properties" in roleChild:
+                                roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
 
-                                    if "location" in roleChild:
-                                        del roleChild["location"]
+                            if "location" in roleChild:
+                                del roleChild["location"]
 
-                                    tree["nodes"][id] = roleChild
-                            else:
+                            tree["nodes"][id] = roleChild
+                    else:
+                        node_dic["id"] = curr_node.id
+                        node_dic["title"] = curr_node.title
+                        children = self.getChildren(curr_node, added)
+                        if children:
+                            node_dic["children"] = []
+                            for child in children:
                                 que.put(child)
-                                node_dic["children"].append(child.id)
+                                if child.isRole:
+                                    if child.id not in changedIDs:
+                                        changedIDs[child.id] = globals.randomID()
+                                    node_dic["children"].append(changedIDs[child.id])
+                                else:
+                                    node_dic["children"].append(child.id)
 
-                    properties = curr_node.properties
-                    if properties:
-                        # In case of Role and Tactic nodes, make the child name/role the name of the node
-                        if curr_node.title == "Tactic":
-                            node_dic["name"] = properties["name"].get()
-                        elif curr_node.title == "Role":
-                            node_dic["name"] = properties["ROLE"].get()
-                        else:
-                            node_dic["properties"] = {}
-                            for property, value in properties.items():
-                                if value.get():
-                                    node_dic["properties"][property] = value.get()
+                        properties = curr_node.properties
+                        if properties:
+                            # In case of Role and Tactic nodes, make the child name/role the name of the node
+                            if curr_node.title == "Tactic":
+                                node_dic["name"] = properties["name"].get()
+                            elif curr_node.title == "Role":
+                                node_dic["name"] = properties["ROLE"].get()
+                            else:
+                                node_dic["properties"] = {}
+                                for property, value in properties.items():
+                                    if value.get():
+                                        node_dic["properties"][property] = value.get()
 
-                    tree["nodes"][curr_node.id] = node_dic
-                    added.append(curr_node)
+                        if curr_node.title != "Root":
+                            tree["nodes"][curr_node.id] = node_dic
+
+                        added.append(curr_node)
 
         data["trees"].append(tree)
         json_file["data"] = data
@@ -368,6 +392,8 @@ class Window:
         with open(file, 'w') as f:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
+
+        messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to "jsons" as ' + name + '.json')
 
     # Add custom property
     def addProperty(self, node):

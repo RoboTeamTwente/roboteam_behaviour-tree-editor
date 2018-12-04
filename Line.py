@@ -9,5 +9,24 @@ class Line:
         self.x1, self.y1, self.x2, self.y2 = coords
         Line.lines.append(self)
 
+    def __del__(self):
+        print("Line successfully deleted!")
+
+    def delete(self):
+        for node in self.a.nodes.copy():
+            for line in node.lines:
+                if line == self:
+                    node.lines.remove(self)
+
+        for node in self.b.nodes.copy():
+            for line in node.lines:
+                if line == self:
+                    node.lines.remove(self)
+
+        if self in Line.lines:
+            Line.lines.remove(self)
+
+        del self
+
     def changeCoords(self, coords):
         self.x1, self.y1, self.x2, self.y2 = coords

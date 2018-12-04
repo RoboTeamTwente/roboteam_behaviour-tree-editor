@@ -50,6 +50,21 @@ class Node:
 
         Node.nodes.append(self)
 
+    def __del__(self):
+        print("Node successfully deleted")
+
+    def delete(self):
+        if self in Node.nodes:
+            Node.nodes.remove(self)
+
+        for node in Node.nodes.copy():
+            for line in node.lines:
+                if line.a == self or line.b == self:
+                    node.lines.remove(line)
+                    line.delete()
+
+        del self
+
     def attach(self, canvas, x=30, y=20):
         if canvas is self.canvas:
             self.canvas.coords(self.canvas_id, x, y)
@@ -103,13 +118,15 @@ class Node:
         label.destroy()
 
     def press(self, event):
+        Node.drawing_line = None
         if keyboard.is_pressed("d"):
             if dnd_start(self, event):
                 x, y = self.where(self.canvas, event)
                 x += self.x_off
                 y += self.y_off
                 coords = self.canvas.coords(self.canvas_id)
-                Node.drawing_line = self.canvas.create_line(coords[0] + self.x_off, coords[1] + self.y_off, x, y)
+                self.drawing_line = self.canvas.create_line(coords[0] + self.x_off, coords[1] + self.y_off, x, y)
+
         else:
             if dnd_start(self, event):
                 # where the pointer is relative to the label widget:
