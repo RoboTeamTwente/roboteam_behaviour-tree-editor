@@ -54,8 +54,8 @@ class Node:
         if self in Node.nodes:
             Node.nodes.remove(self)
 
-        for node in Node.nodes.copy():
-            for line in node.lines:
+        for node in list(Node.nodes):
+            for line in list(node.lines):
                 if line.a == self or line.b == self:
                     node.lines.remove(line)
                     line.delete()
