@@ -57,14 +57,16 @@ class DndHandler:
             for node in self.source.nodes:
                 for line in node.lines:
                     if line.a == self.source or line.b == self.source:
-                        print("FOUND!")
+                        node.lines.remove(line)
                         line.delete()
 
             self.source.delete()
             self.initial_widget.destroy()
-            return
+            return True
 
         globals.main_window.spawnProperties(self.source)
+
+        return False
 
     def on_motion(self, event):
         x, y = event.x_root, event.y_root
@@ -94,25 +96,27 @@ class DndHandler:
                 self.target = new_target
 
     def on_release(self, event):
+        deleted = False
         ms = (datetime.datetime.now() - self.time).microseconds / 1000
         if ms < 150:
-            self.click()
+            deleted = self.click()
 
-        self.finish(event, 1)
+        self.finish(event, 1, deleted)
 
     def cancel(self, event=None):
         self.finish(event, 0)
 
-    def finish(self, event, commit=0):
+    def finish(self, event, commit=0, deleted = False):
         target = self.target
         source = self.source
         widget = self.initial_widget
         root = self.root
         try:
             del root.__dnd
-            self.initial_widget.unbind(self.release_pattern)
-            self.initial_widget.unbind("<Motion>")
-            widget['cursor'] = self.save_cursor
+            if not deleted:
+                self.initial_widget.unbind(self.release_pattern)
+                self.initial_widget.unbind("<Motion>")
+                widget['cursor'] = self.save_cursor
             self.target = self.source = self.initial_widget = self.root = None
             if target:
                 if commit:
