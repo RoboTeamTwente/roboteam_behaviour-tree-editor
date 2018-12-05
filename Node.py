@@ -29,6 +29,9 @@ class Node:
         self.title = title
         self.isRole = isRole
 
+        self.x_off = 0
+        self.y_off = 0
+
         # Load id if id is set in loadProperties
         if loadProperties and "id" in loadProperties:
             self.id = loadProperties["id"]
