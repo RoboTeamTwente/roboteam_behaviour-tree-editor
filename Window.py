@@ -357,6 +357,9 @@ class Window:
 
     # Save tree as interpretable JSON
     def saveJSON(self):
+        if not self.treeValidation():
+            return
+
         name = self.treeName.get()
         que = queue.Queue()
         added = []
