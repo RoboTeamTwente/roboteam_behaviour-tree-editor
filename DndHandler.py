@@ -1,6 +1,7 @@
 import datetime
 import globals
 import keyboard
+from Line import Line
 
 
 class DndHandler:
@@ -42,14 +43,6 @@ class DndHandler:
                 pass
 
     def click(self):
-        if keyboard.is_pressed('d'):
-            if not DndHandler.clicked:
-                DndHandler.clicked.append(self.source)
-            elif len(DndHandler.clicked) == 1:
-                DndHandler.clicked.append(self.source)
-                self.source.drawLine(DndHandler.clicked[0], DndHandler.clicked[1])
-                DndHandler.clicked = []
-
         if keyboard.is_pressed('r'):
             for line in list(self.source.lines):
                 self.source.canvas.after(10, self.source.canvas.delete, line.id)
@@ -70,37 +63,72 @@ class DndHandler:
         return False
 
     def on_motion(self, event):
-        x, y = event.x_root, event.y_root
-        target_widget = self.initial_widget.winfo_containing(x, y)
-        source = self.source
-        new_target = None
-        while target_widget:
-            try:
-                attr = target_widget.dnd_accept
-            except AttributeError:
-                pass
-            else:
-                new_target = attr(source, event)
-                if new_target:
-                    break
-            target_widget = target_widget.master
-        old_target = self.target
-        if old_target is new_target:
-            if old_target:
-                old_target.dnd_motion(source, event)
+        if keyboard.is_pressed('d'):
+            coords = self.source.canvas.coords(self.source.canvas_id)
+            x, y = self.source.where(self.source.canvas, event)
+            x += self.source.x_off
+            y += self.source.y_off
+            self.source.canvas.coords(self.source.drawing_line, coords[0] + self.source.x_off, coords[1] + self.source.y_off, x, y)
         else:
-            if old_target:
-                self.target = None
-                old_target.dnd_leave(source, event)
-            if new_target:
-                new_target.dnd_enter(source, event)
-                self.target = new_target
+            x, y = event.x_root, event.y_root
+            target_widget = self.initial_widget.winfo_containing(x, y)
+            source = self.source
+            new_target = None
+            while target_widget:
+                try:
+                    attr = target_widget.dnd_accept
+                except AttributeError:
+                    pass
+                else:
+                    new_target = attr(source, event)
+                    if new_target:
+                        break
+                target_widget = target_widget.master
+            old_target = self.target
+            if old_target is new_target:
+                if old_target:
+                    old_target.dnd_motion(source, event)
+            else:
+                if old_target:
+                    self.target = None
+                    old_target.dnd_leave(source, event)
+                if new_target:
+                    new_target.dnd_enter(source, event)
+                    self.target = new_target
+
+    def checkValidLine(self, node1, node2):
+        if node1 == node2:
+            return False
+
+        for line in Line.lines:
+            if (line.a == node1 and line.b == node2) or (line.a == node2 and line.b == node1):
+                return False
+
+        return True
 
     def on_release(self, event):
         deleted = False
         ms = (datetime.datetime.now() - self.time).microseconds / 1000
         if ms < 150:
             deleted = self.click()
+
+        if self.source.drawing_line:
+            _, _, line_x, line_y = self.source.canvas.coords(self.source.drawing_line)
+
+            for node in self.source.nodes:
+                x1, y1, x2, y2 = node.canvas.bbox(node.canvas_id)
+                if (x2 > line_x > x1) and (y2 > line_y > y1):
+                    if self.checkValidLine(self.source, node):
+                        line = Line(self.source.drawing_line, self.source, node, self.source.canvas.coords(self.source.drawing_line))
+                        self.source.lines.append(line)
+                        node.lines.append(line)
+
+                        self.source.drawing_line = None
+                        self.finish(event, 1)
+                        return
+
+            self.source.canvas.delete(self.source.drawing_line)
+            self.source.drawing_line = None
 
         self.finish(event, 1, deleted)
 
