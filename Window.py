@@ -291,16 +291,10 @@ class Window:
         for n in Node.nodes:
             if n.title == "Root":
                 root_children = self.getChildren(n, added)
-                print(root_children)
-                # Check if the root only has 1 child
-                if len(root_children) == 1:
-                    tree["root"] = root_children[0].id
-                    tree["nodes"] = {}
-                    que.put(root_children[0])
-                    added.append(n)
-                else:
-                    messagebox.showinfo('Error 594', 'Error 594: Root has more or less than 1 child')
-                    return
+                tree["root"] = root_children[0].id
+                tree["nodes"] = {}
+                que.put(root_children[0])
+                added.append(n)
 
                 while not que.empty():
                     node_dic = {}
@@ -372,20 +366,14 @@ class Window:
         for n in Node.nodes:
             if n.title == "Root":
                 root_children = self.getChildren(n, added)
-                # Check if the root only has 1 child
-                if len(root_children) == 1:
-
-                    if root_children[0].isRole:
-                        changedIDs[root_children[0].id] = globals.randomID()
-                        tree["root"] = changedIDs[root_children[0].id]
-                    else:
-                        tree["root"] = root_children[0].id
-
-                    tree["nodes"] = {}
-                    que.put(n)
+                if root_children[0].isRole:
+                    changedIDs[root_children[0].id] = globals.randomID()
+                    tree["root"] = changedIDs[root_children[0].id]
                 else:
-                    messagebox.showinfo('Error 592', 'Error 592: Root has more or less than 1 child')
-                    return
+                    tree["root"] = root_children[0].id
+
+                tree["nodes"] = {}
+                que.put(n)
 
                 while not que.empty():
                     node_dic = {}
