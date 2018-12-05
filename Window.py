@@ -21,6 +21,7 @@ import random
 import string
 import globals
 
+
 class Window:
     types = dict()
     nodes = dict()
@@ -71,13 +72,15 @@ class Window:
         # Spawn node types
         for type, nodes in types.items():
             nodeWindow = PanedWindow(self.nodeList)
-            newLabel = Button(nodeWindow, text=type.capitalize(), bd=0, command=lambda type=type, nodeWindow=nodeWindow: self.toggleNodes(type, nodeWindow))
+            newLabel = Button(nodeWindow, text=type.capitalize(), bd=0,
+                              command=lambda type=type, nodeWindow=nodeWindow: self.toggleNodes(type, nodeWindow))
             newLabel.pack(fill=BOTH)
             nodeWindow.pack(fill=BOTH)
 
         # Spawn role nodes
         nodeWindow = PanedWindow(self.nodeList)
-        newLabel = Button(nodeWindow, text="Roles", bd=0, command=lambda nodeWindow=nodeWindow: self.toggleNodes("roles", nodeWindow))
+        newLabel = Button(nodeWindow, text="Roles", bd=0,
+                          command=lambda nodeWindow=nodeWindow: self.toggleNodes("roles", nodeWindow))
         newLabel.pack(fill=BOTH)
         nodeWindow.pack(fill=BOTH)
 
@@ -128,6 +131,45 @@ class Window:
                 newNode = Button(nodeWindow, text=node, command=lambda title=node: self.addNode(title, isRole=isRole))
                 newNode.pack(fill=BOTH)
 
+    def validRootCheck(self):
+        roots = [node for node in Node.nodes if node.title == "Root"]
+        if len(roots) != 1:
+            messagebox.showinfo('Error 576', 'Error 576: More or less than one root exists')
+            return False
+
+        root_children = self.getChildren(roots[0], [])
+        if len(root_children) != 1:
+            messagebox.showinfo('Error 594', 'Error 594: Root has more or less than 1 child')
+            return False
+
+        return True
+
+    def circularCheck(self):
+        que = queue.Queue()
+        added = []
+        root = [node for node in Node.nodes if node.title == "Root"][0]
+        que.put([root, None])
+        while not que.empty():
+            node, parent = que.get()
+            children = self.getChildren(node, [parent])
+            for child in children:
+                if child in added:
+                    return False
+                que.put([child, node])
+
+            added.append(node)
+
+        return True
+
+    def treeValidation(self):
+        if not self.validRootCheck():
+            return False
+        if not self.circularCheck():
+            messagebox.showinfo('Error 839', 'Error 839: Tree is circular!')
+            return False
+
+        return True
+
     # Removes all nodes and starts with fresh canvas
     def newTree(self):
         for line in list(Line.lines):
@@ -160,7 +202,8 @@ class Window:
         if "x_orig" in children:
             return sorted(children, key=operator.attrgetter('x_orig'))
         else:
-            return [child for _, child in sorted(zip([x for x, y in [a.canvas.coords(a.canvas_id) for a in children]], children))]
+            return [child for _, child in
+                    sorted(zip([x for x, y in [a.canvas.coords(a.canvas_id) for a in children]], children))]
 
     def loadTree(self, name, loadRole=False):
         self.newTree()
@@ -201,7 +244,7 @@ class Window:
         self.treeName.set(role.title)
         self.e.focus()
         roleList = {}
-        changedIDs = {}     # Dictionary to keep track of randomly changed IDs
+        changedIDs = {}  # Dictionary to keep track of randomly changed IDs
         with open(globals.PROJECT_DIR + "roles/" + role.title + ".json") as f:
             data = json.load(f)
 
@@ -234,6 +277,9 @@ class Window:
 
     # Save tree so it can be loaded in again
     def saveTree(self, saveRole=False):
+        if not self.treeValidation():
+            return
+
         name = self.treeName.get()
         que = queue.Queue()
         added = []
@@ -306,7 +352,8 @@ class Window:
             os.chmod(file, 0o777)
 
             self.loadmenu.add_command(label=name, command=lambda file=name: self.loadTree(file))
-            messagebox.showinfo('Tree saved successfully!', 'Tree successfully saved in "saved_trees" as ' + name + '.json')
+            messagebox.showinfo('Tree saved successfully!',
+                                'Tree successfully saved in "saved_trees" as ' + name + '.json')
 
     # Save tree as interpretable JSON
     def saveJSON(self):
@@ -473,4 +520,3 @@ class Window:
         self.dnd_leave(source, event)
         x, y = source.where(self.canvas, event)
         source.attach(self.canvas, x, y)
-
