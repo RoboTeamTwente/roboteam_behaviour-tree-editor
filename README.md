@@ -16,7 +16,7 @@ Run setup.sh and the shell script "b3e.sh" will be generated in the main RTT fol
 # How-to draw trees
 Click a node at the left to spawn it, it can be moved by simply dragging.
 
-To draw lines between nodes, hold "d" and press both nodes.
+To draw lines between nodes, hold "d" and drag a line between nodes.
 
 To remove nodes, hold "r" while pressing it.
 
