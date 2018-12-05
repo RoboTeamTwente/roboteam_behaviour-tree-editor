@@ -316,8 +316,9 @@ class Window:
                             node_dic["properties"][property] = value.get()
 
                     node_dic["location"] = {}
-                    node_dic["location"]["x"] = curr_node.x_orig
-                    node_dic["location"]["y"] = curr_node.y_orig
+                    x, y = curr_node.canvas.coords(curr_node.canvas_id)
+                    node_dic["location"]["x"] = x
+                    node_dic["location"]["y"] = y
 
                     tree["nodes"][curr_node.id] = node_dic
                     added.append(curr_node)
