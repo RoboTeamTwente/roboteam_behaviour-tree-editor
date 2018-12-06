@@ -2,3 +2,4 @@ GoToPos,ROLE,Position,goToBall,random
 GoToPosLuTh,ROLE,Position,goToBall,random
 Kick,ROLE
 Chip,ROLE
+Dribble,ROLE,Position,maxTicks,forwardDirection
