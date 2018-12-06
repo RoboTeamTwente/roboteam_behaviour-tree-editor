@@ -241,7 +241,6 @@ class Window:
 
     # Load role in order to add to JSON
     def loadRole(self, role, roleRoot):
-        self.treeName.set(role.title)
         self.e.focus()
         roleList = {}
         changedIDs = {}  # Dictionary to keep track of randomly changed IDs
