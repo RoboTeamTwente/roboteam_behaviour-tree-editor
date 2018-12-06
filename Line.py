@@ -9,9 +9,6 @@ class Line:
         self.x1, self.y1, self.x2, self.y2 = coords
         Line.lines.append(self)
 
-    def __del__(self):
-        print("Line successfully deleted!")
-
     def delete(self):
         for node in list(self.a.nodes):
             for line in node.lines:

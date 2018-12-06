@@ -53,9 +53,6 @@ class Node:
 
         Node.nodes.append(self)
 
-    def __del__(self):
-        print("Node successfully deleted")
-
     def delete(self):
         if self in Node.nodes:
             Node.nodes.remove(self)
