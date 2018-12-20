@@ -72,14 +72,14 @@ class Window:
         # Spawn node types
         for type, nodes in types.items():
             nodeWindow = PanedWindow(self.nodeList)
-            newLabel = Button(nodeWindow, text=type.capitalize(), bd=0,
+            newLabel = Button(nodeWindow, text=type.capitalize(), font="bold", bd=0,
                               command=lambda type=type, nodeWindow=nodeWindow: self.toggleNodes(type, nodeWindow))
             newLabel.pack(fill=BOTH)
             nodeWindow.pack(fill=BOTH)
 
         # Spawn role nodes
         nodeWindow = PanedWindow(self.nodeList)
-        newLabel = Button(nodeWindow, text="Roles", bd=0,
+        newLabel = Button(nodeWindow, text="Roles", font="bold", bd=0,
                           command=lambda nodeWindow=nodeWindow: self.toggleNodes("roles", nodeWindow))
         newLabel.pack(fill=BOTH)
         nodeWindow.pack(fill=BOTH)
