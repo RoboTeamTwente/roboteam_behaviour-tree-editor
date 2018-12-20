@@ -382,7 +382,9 @@ class Window:
                         roleChildren = self.loadRole(curr_node, changedIDs[curr_node.id])
                         for id, roleChild in roleChildren.items():
                             # Inherit ROLE from the role node
-                            if "ROLE" in curr_node.properties and "properties" in roleChild:
+                            if "properties" not in roleChild:
+                                roleChild["properties"] = {}
+                            if "ROLE" in curr_node.properties:
                                 roleChild["properties"]["ROLE"] = curr_node.properties["ROLE"].get()
 
                             if "location" in roleChild:
