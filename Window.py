@@ -390,6 +390,9 @@ class Window:
                             if "location" in roleChild:
                                 del roleChild["location"]
 
+                            if "isRole" in roleChild:
+                                del roleChild["isRole"]
+
                             tree["nodes"][id] = roleChild
                     else:
                         node_dic["id"] = curr_node.id
