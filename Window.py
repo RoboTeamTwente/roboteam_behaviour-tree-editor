@@ -51,8 +51,14 @@ class Window:
         self.bottomWindow = PanedWindow(self.window)
         self.bottomWindow.pack(fill=BOTH, expand=1)
 
-        self.nodeList = PanedWindow(self.bottomWindow, orient=VERTICAL)
-        self.bottomWindow.add(self.nodeList)
+        self.nodeCanvas = Canvas(self.bottomWindow)
+        self.scrollbar = Scrollbar(self.nodeCanvas)
+        self.scrollbar.pack(side=RIGHT, fill=Y)
+
+        self.nodeList = Listbox(self.nodeCanvas, yscrollcommand=self.scrollbar.set)
+        self.nodeList.pack(side=TOP)
+
+        self.bottomWindow.add(self.nodeCanvas)
 
         self.canvasPane = PanedWindow(self.bottomWindow)
         self.bottomWindow.add(self.canvasPane)
@@ -83,6 +89,9 @@ class Window:
                           command=lambda nodeWindow=nodeWindow: self.toggleNodes("roles", nodeWindow))
         newLabel.pack(fill=BOTH)
         nodeWindow.pack(fill=BOTH)
+
+        # Configure scrollbar
+        self.scrollbar.config(command=self.nodeList.yview)
 
         # Create menu bar
         self.menubar = Menu(self.root)
