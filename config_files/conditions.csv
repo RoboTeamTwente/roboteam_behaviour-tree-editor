@@ -1,1 +1,7 @@
 HasBall,ROLE
+TheyHaveBall
+HasBall
+BallKickerToOurGoal
+IsOnOurSide
+WeHaveBall
+IsRobotClosestToBall,secondsAhead
