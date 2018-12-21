@@ -105,8 +105,3 @@ venv.bak/
 
 # Custom added
 .idea/*
-
-# Tree folders
-jsons/
-roles/
-saved_trees/
