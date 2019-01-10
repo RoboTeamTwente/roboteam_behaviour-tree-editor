@@ -87,11 +87,11 @@ class Window:
         # Create menu bar
         self.menubar = Menu(self.root)
         self.menubar.add_command(label="New", command=lambda: self.newTree())
-        self.menubar.add_command(label="Save tree", command=lambda: self.saveTree())
+        self.menubar.add_command(label="Save tree", command=lambda: self.save())
 
-        # Create tree loading menu with all saved_trees as buttons
+        # Create tree loading menu with all DO_NOT_TOUCH as buttons
         self.loadmenu = Menu(self.menubar, tearoff=0)
-        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "saved_trees") if f != ".keep"]):
+        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "DO_NOT_TOUCH") if f != ".keep"]):
             file = file[:-5]
             self.loadmenu.add_command(label=file, command=lambda file=file: self.loadTree(file))
         self.menubar.add_cascade(label="Load tree", menu=self.loadmenu)
@@ -105,8 +105,15 @@ class Window:
             self.loadRoleMenu.add_command(label=file, command=lambda file=file: self.loadTree(file, loadRole=True))
         self.menubar.add_cascade(label="Load role", menu=self.loadRoleMenu)
 
-        self.menubar.add_command(label="Export JSON", command=lambda: self.saveJSON())
         self.menubar.add_command(label="Quit", command=self.root.quit)
+
+        self.save_json = BooleanVar()
+        self.save_json.set(True)
+        self.save_tree = BooleanVar()
+        self.save_tree.set(True)
+
+        self.menubar.add_checkbutton(label="Save JSON", onvalue=True, offvalue=False, variable=self.save_json)
+        self.menubar.add_checkbutton(label="Save tree", onvalue=True, offvalue=False, variable=self.save_tree)
 
         # Configure menu bar
         self.root.config(menu=self.menubar)
@@ -212,7 +219,7 @@ class Window:
         if loadRole:
             file = globals.PROJECT_DIR + 'roles/' + name + '.json'
         else:
-            file = globals.PROJECT_DIR + 'saved_trees/' + name + '.json'
+            file = globals.PROJECT_DIR + 'DO_NOT_TOUCH/' + name + '.json'
         with open(file, 'r') as f:
             data = json.load(f)
 
@@ -273,6 +280,14 @@ class Window:
             roleList[id] = node
 
         return roleList
+
+    def save(self):
+        if self.save_json.get():
+            self.saveJSON()
+        if self.save_tree.get():
+            self.saveTree()
+        if not self.save_json.get() and not self.save_tree.get():
+            messagebox.showinfo('Warning', 'Nothing was saved!')
 
     # Save tree so it can be loaded in again
     def saveTree(self, saveRole=False):
@@ -339,7 +354,7 @@ class Window:
             messagebox.showinfo('Role saved successfully!', 'Role successfully saved in "roles" as ' + name + '.json')
 
         else:
-            file = globals.PROJECT_DIR + "saved_trees/" + name + ".json"
+            file = globals.PROJECT_DIR + "DO_NOT_TOUCH/" + name + ".json"
 
             with open(file, 'w') as f:
                 json.dump(json_file, f)
@@ -347,7 +362,7 @@ class Window:
 
             self.loadmenu.add_command(label=name, command=lambda file=name: self.loadTree(file))
             messagebox.showinfo('Tree saved successfully!',
-                                'Tree successfully saved in "saved_trees" as ' + name + '.json')
+                                'Tree successfully saved in "DO_NOT_TOUCH" as ' + name + '.json')
 
     # Save tree as interpretable JSON
     def saveJSON(self):
