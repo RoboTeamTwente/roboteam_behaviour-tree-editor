@@ -42,8 +42,17 @@ class Window:
 
         self.treeName = StringVar()
         self.topWindow.add(Label(self.topWindow, text="Name"))
-        self.nameEntry = Entry(self.topWindow, textvariable=self.treeName)
+        self.nameEntry = Entry(self.topWindow, textvariable=self.treeName, width=100)
         self.topWindow.add(self.nameEntry)
+
+        self.saveToFolder = StringVar()
+        self.FolderOptions = ("false", "keeper", "strategies", "tactics")
+        self.saveToFolder.set(self.FolderOptions[0])
+
+        self.topWindow.add(Label(self.topWindow, text="Save to roboteam_ai"))
+        self.saveToFolderEntry = OptionMenu(self.topWindow, self.saveToFolder, *self.FolderOptions)
+        self.topWindow.add(self.saveToFolderEntry)
+
         self.e = Entry()
         self.e.pack()
 
@@ -109,11 +118,15 @@ class Window:
 
         self.save_json = BooleanVar()
         self.save_json.set(True)
+        self.save_json_ai = BooleanVar()
+        self.save_json_ai.set(False)
         self.save_tree = BooleanVar()
         self.save_tree.set(True)
 
-        self.menubar.add_checkbutton(label="Save JSON", onvalue=True, offvalue=False, variable=self.save_json)
+        self.menubar.add_checkbutton(label="Save JSON to editor", onvalue=True, offvalue=False, variable=self.save_json)
         self.menubar.add_checkbutton(label="Save tree", onvalue=True, offvalue=False, variable=self.save_tree)
+        self.menubar.add_separator()
+
 
         # Configure menu bar
         self.root.config(menu=self.menubar)
@@ -283,9 +296,11 @@ class Window:
 
     def save(self):
         if self.save_json.get():
-            self.saveJSON()
+            self.saveJSON(False)
         if self.save_tree.get():
             self.saveTree()
+        if self.saveToFolder.get() != "false":
+            self.saveJSON(self.saveToFolder.get())
         if not self.save_json.get() and not self.save_tree.get():
             messagebox.showinfo('Warning', 'Nothing was saved!')
 
@@ -365,7 +380,7 @@ class Window:
                                 'Tree successfully saved in "DO_NOT_TOUCH" as ' + name + '.json')
 
     # Save tree as interpretable JSON
-    def saveJSON(self):
+    def saveJSON(self, save_to_ai):
         if not self.treeValidation():
             return
 
@@ -445,13 +460,23 @@ class Window:
         data["trees"].append(tree)
         json_file["data"] = data
 
-        file = globals.PROJECT_DIR + "jsons/" + name + ".json"
+        if save_to_ai:
+            path_to_folder = globals.findJSONDirectory(save_to_ai)
+            if path_to_folder:
+                file = globals.findJSONDirectory(save_to_ai) + name + ".json"
+            else:
+                messagebox.showinfo('Error!', 'An error occurred finding the right path!')
+        else:
+            file = globals.PROJECT_DIR + "jsons/" + name + ".json"
 
         with open(file, 'w') as f:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
 
-        messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to "jsons" as ' + name + '.json')
+        if save_to_ai:
+            messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to "jsons/' + save_to_ai + '" as ' + name + '.json')
+        else:
+            messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to "jsons" as ' + name + '.json')
 
     # Add custom property
     def addProperty(self, node):
