@@ -8,6 +8,7 @@ except:
 from Node import Node
 from Line import Line
 import json
+from time import sleep
 
 try:
     import queue as queue
@@ -100,10 +101,13 @@ class Window:
 
         # Create tree loading menu with all DO_NOT_TOUCH as buttons
         self.loadmenu = Menu(self.menubar, tearoff=0)
-        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "DO_NOT_TOUCH") if f != ".keep"]):
-            file = file[:-5]
-            self.loadmenu.add_command(label=file, command=lambda file=file: self.loadTree(file))
         self.menubar.add_cascade(label="Load tree", menu=self.loadmenu)
+        for directory in [location for location in os.listdir(globals.ai_json_folder) if os.path.isdir(globals.ai_json_folder + location)]:
+            submenu = Menu(self.loadmenu, tearoff=0)
+            for tree_file in [x for x in os.listdir(globals.ai_json_folder + directory) if x[-5:] == ".json"]:
+                file = tree_file[:-5]
+                submenu.add_command(label=file, command=lambda file=file, directory=directory: self.loadTree(directory, file))
+            self.loadmenu.add_cascade(label=directory, menu=submenu)
 
         self.menubar.add_command(label="Save role", command=lambda: self.saveTree(True))
 
@@ -225,34 +229,75 @@ class Window:
             return [child for _, child in
                     sorted(zip([x for x, y in [a.canvas.coords(a.canvas_id) for a in children]], children))]
 
-    def loadTree(self, name, loadRole=False):
+    def loadTree(self, directory, name, loadRole=False):
         self.newTree()
         self.treeName.set(name)
+        self.saveToFolder.set(directory)
         self.e.focus()
         if loadRole:
             file = globals.PROJECT_DIR + 'roles/' + name + '.json'
         else:
-            file = globals.PROJECT_DIR + 'DO_NOT_TOUCH/' + name + '.json'
+            file = globals.ai_json_folder + directory + "/" + name + ".json"
+
         with open(file, 'r') as f:
             data = json.load(f)
 
         # Draw nodes
         nodes = data["data"]["trees"][0]["nodes"]
         root_child = data["data"]["trees"][0]["root"]
-        for id, node in nodes.items():
-            added_node = self.addNode(node["title"], node, node["isRole"])
-            if id == root_child:
-                root_properties = {"location": {}}
-                root_properties["location"]["x"] = nodes[id]["location"]["x"]
-                root_properties["location"]["y"] = nodes[id]["location"]["y"] - 100
 
-                root = self.addNode("Root", root_properties)
-                root_child = node["id"]
-                root.drawLine(root, added_node)
+        nodes_to_draw = []
+        nodes_to_draw.append([nodes[root_child]])
+        levels = 1
 
-        # Loop again to draw lines
+        while True:
+            next_layer = []
+            for node in nodes_to_draw[levels - 1]:
+                if "children" in node and node["title"] != "Role":
+                    next_layer.extend(node["children"])
+
+            if len(next_layer) == 0:
+                break
+
+            next_layer = [nodes[node_id] for node_id in next_layer]
+            nodes_to_draw.append(next_layer)
+            levels += 1
+
+        layer_height = self.canvas.winfo_height() / (levels + 2)
+
+        for layer in range(len(nodes_to_draw)):
+            y = (layer + 2) * layer_height
+            layer_width = self.canvas.winfo_width() / (len(nodes_to_draw[layer]) + 1)
+            for i in range(len(nodes_to_draw[layer])):
+                node = nodes_to_draw[layer][i]
+                node_properties = {"location": {}}
+                node_properties["id"] = node["id"]
+                node_properties["location"]["x"] = layer_width * (i + 1)
+                node_properties["location"]["y"] = y
+                if "properties" in node:
+                    node_properties["properties"] = node["properties"]
+
+                if node["title"] == "Role":
+                    node["title"] = node["name"]
+                    if "properties" not in node:
+                        node["properties"] = {"isRole": True}
+
+                added_node = self.addNode(node["title"], node_properties)
+
+                if layer == 0:
+                    node_properties["id"] = globals.randomID()
+                    node_properties["location"]["x"] = self.canvas.winfo_width() / 2
+                    node_properties["location"]["y"] = layer_height
+
+                    root = self.addNode("root", node_properties)
+                    root.drawLine(root, added_node)
+
         for id, node in nodes.items():
-            if "children" in node:
+            if id in [x.id for x in Node.nodes] and "children" in node:
+                if "properties" in node:
+                    if "isRole" in node["properties"]:
+                        continue
+
                 children = node["children"]
                 for child in children:
                     first_node = [n for n in Node.nodes if n.id == id][0]

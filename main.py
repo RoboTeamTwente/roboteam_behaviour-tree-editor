@@ -34,6 +34,10 @@ def main():
     root.winfo_toplevel().title("RTT Behavior Tree Editor")
     types, nodes = getNodes()
 
+    globals.ai_json_folder = globals.findJSONDirectory()
+    if not globals.ai_json_folder:
+        exit("jsons folder in roboteam_ai not found!")
+
     globals.main_window = Window(root, types, nodes)
     root.mainloop()
 
