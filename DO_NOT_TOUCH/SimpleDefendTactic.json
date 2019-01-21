@@ -1,1 +1,99 @@
-{"data": {"trees": [{"nodes": {"t6tyj94tuafdcke7": {"location": {"y": 287.0, "x": 280.0}, "children": ["97ltwtv7xbh69nfkt"], "id": "t6tyj94tuafdcke7", "isRole": false, "title": "Repeater"}, "97ltwtv7xbh69nfkt": {"properties": {"ROLE": "simpleDefender1"}, "location": {"y": 533.0, "x": 225.0}, "id": "97ltwtv7xbh69nfkt", "isRole": true, "title": "SimpleDefendRole"}, "dxf3vtqvauph2a": {"properties": {"ROLE": "simpleDefender3"}, "location": {"y": 588.0, "x": 754.0}, "id": "dxf3vtqvauph2a", "isRole": true, "title": "SimpleDefendRole"}, "1tp9koxr03k8r6": {"location": {"y": 281.0, "x": 728.0}, "children": ["dxf3vtqvauph2a"], "id": "1tp9koxr03k8r6", "isRole": false, "title": "Repeater"}, "k30wh6vmw0i571uq": {"location": {"y": 136.0, "x": 477.0}, "children": ["t6tyj94tuafdcke7", "dr1uax5kda5p6", "1tp9koxr03k8r6"], "id": "k30wh6vmw0i571uq", "isRole": false, "title": "ParallelSequence"}, "dr1uax5kda5p6": {"location": {"y": 274.0, "x": 494.0}, "children": ["mtj257jzcyomaox"], "id": "dr1uax5kda5p6", "isRole": false, "title": "Repeater"}, "mtj257jzcyomaox": {"properties": {"ROLE": "simpleDefender2"}, "location": {"y": 544.0, "x": 486.0}, "id": "mtj257jzcyomaox", "isRole": true, "title": "SimpleDefendRole"}}, "root": "k30wh6vmw0i571uq", "title": "SimpleDefendTactic"}]}, "name": "SimpleDefendTactic"}
+{
+  "data": {
+    "trees": [
+      {
+        "nodes": {
+          "t6tyj94tuafdcke7": {
+            "location": {
+              "y": 287.0,
+              "x": 280.0
+            },
+            "children": [
+              "97ltwtv7xbh69nfkt"
+            ],
+            "id": "t6tyj94tuafdcke7",
+            "isRole": false,
+            "title": "Repeater"
+          },
+          "97ltwtv7xbh69nfkt": {
+            "properties": {
+              "ROLE": "simpleDefender1"
+            },
+            "location": {
+              "y": 533.0,
+              "x": 225.0
+            },
+            "id": "97ltwtv7xbh69nfkt",
+            "isRole": true,
+            "title": "SimpleDefendRole"
+          },
+          "dxf3vtqvauph2a": {
+            "properties": {
+              "ROLE": "simpleDefender3"
+            },
+            "location": {
+              "y": 588.0,
+              "x": 754.0
+            },
+            "id": "dxf3vtqvauph2a",
+            "isRole": true,
+            "title": "SimpleDefendRole"
+          },
+          "1tp9koxr03k8r6": {
+            "location": {
+              "y": 281.0,
+              "x": 728.0
+            },
+            "children": [
+              "dxf3vtqvauph2a"
+            ],
+            "id": "1tp9koxr03k8r6",
+            "isRole": false,
+            "title": "Repeater"
+          },
+          "k30wh6vmw0i571uq": {
+            "location": {
+              "y": 136.0,
+              "x": 477.0
+            },
+            "children": [
+              "t6tyj94tuafdcke7",
+              "dr1uax5kda5p6",
+              "1tp9koxr03k8r6"
+            ],
+            "id": "k30wh6vmw0i571uq",
+            "isRole": false,
+            "title": "ParallelSequence"
+          },
+          "dr1uax5kda5p6": {
+            "location": {
+              "y": 274.0,
+              "x": 494.0
+            },
+            "children": [
+              "mtj257jzcyomaox"
+            ],
+            "id": "dr1uax5kda5p6",
+            "isRole": false,
+            "title": "Repeater"
+          },
+          "mtj257jzcyomaox": {
+            "properties": {
+              "ROLE": "simpleDefender2"
+            },
+            "location": {
+              "y": 544.0,
+              "x": 486.0
+            },
+            "id": "mtj257jzcyomaox",
+            "isRole": true,
+            "title": "SimpleDefendRole"
+          }
+        },
+        "root": "k30wh6vmw0i571uq",
+        "title": "SimpleDefendTactic"
+      }
+    ]
+  },
+  "name": "SimpleDefendTactic"
+}
