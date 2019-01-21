@@ -30,7 +30,7 @@ def getNodes():
 
 def main():
     root = Tk()
-    root.minsize(width=750, height=500)
+    root.minsize(width=800, height=600)
     root.winfo_toplevel().title("RTT Behavior Tree Editor")
     types, nodes = getNodes()
 

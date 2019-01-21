@@ -72,7 +72,7 @@ class Window:
         self.bottomWindow.add(self.canvasPane)
 
         # Create canvas that the trees can be drawn on
-        self.canvas = Canvas(self.canvasPane, width=1100, height=900)
+        self.canvas = Canvas(self.canvasPane, width=750, height=550)
         self.canvasPane.add(self.canvas)
         self.canvas.dnd_accept = self.dnd_accept
 
