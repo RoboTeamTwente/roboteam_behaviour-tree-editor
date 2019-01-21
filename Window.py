@@ -8,6 +8,7 @@ except:
 from Node import Node
 from Line import Line
 import json
+from time import sleep
 
 try:
     import queue as queue
@@ -46,7 +47,11 @@ class Window:
         self.topWindow.add(self.nameEntry)
 
         self.saveToFolder = StringVar()
-        self.FolderOptions = ("false", "keeper", "strategies", "tactics")
+        self.FolderOptions = []
+        for directory in os.listdir(globals.ai_json_folder):
+            if os.path.isdir(globals.ai_json_folder + directory):
+                self.FolderOptions.append(directory)
+
         self.saveToFolder.set(self.FolderOptions[0])
 
         self.topWindow.add(Label(self.topWindow, text="Save to roboteam_ai"))
@@ -100,31 +105,34 @@ class Window:
 
         # Create tree loading menu with all DO_NOT_TOUCH as buttons
         self.loadmenu = Menu(self.menubar, tearoff=0)
-        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "DO_NOT_TOUCH") if f != ".keep"]):
-            file = file[:-5]
-            self.loadmenu.add_command(label=file, command=lambda file=file: self.loadTree(file))
         self.menubar.add_cascade(label="Load tree", menu=self.loadmenu)
+        for directory in [location for location in os.listdir(globals.ai_json_folder) if os.path.isdir(globals.ai_json_folder + location)]:
+            submenu = Menu(self.loadmenu, tearoff=0)
+            for tree_file in [x for x in os.listdir(globals.ai_json_folder + directory) if x[-5:] == ".json"]:
+                file = tree_file[:-5]
+                submenu.add_command(label=file, command=lambda file=file, directory=directory: self.loadTree(directory, file))
+            self.loadmenu.add_cascade(label=directory, menu=submenu)
 
         self.menubar.add_command(label="Save role", command=lambda: self.saveTree(True))
 
         # Create role loading menu with all roles as buttons
         self.loadRoleMenu = Menu(self.menubar, tearoff=0)
-        for file in sorted([f for f in os.listdir(globals.PROJECT_DIR + "roles") if f != ".keep"]):
+        for file in sorted([f for f in os.listdir(globals.ai_json_folder + "roles") if f != ".keep"]):
             file = file[:-5]
             self.loadRoleMenu.add_command(label=file, command=lambda file=file: self.loadTree(file, loadRole=True))
         self.menubar.add_cascade(label="Load role", menu=self.loadRoleMenu)
 
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
-        self.save_json = BooleanVar()
-        self.save_json.set(True)
+        self.save_to_editor = BooleanVar()
+        self.save_to_editor.set(False)
         self.save_json_ai = BooleanVar()
         self.save_json_ai.set(False)
-        self.save_tree = BooleanVar()
-        self.save_tree.set(True)
+        self.save_to_ai = BooleanVar()
+        self.save_to_ai.set(True)
 
-        self.menubar.add_checkbutton(label="Save JSON to editor", onvalue=True, offvalue=False, variable=self.save_json)
-        self.menubar.add_checkbutton(label="Save tree", onvalue=True, offvalue=False, variable=self.save_tree)
+        self.menubar.add_checkbutton(label="Save to editor", onvalue=True, offvalue=False, variable=self.save_to_editor)
+        self.menubar.add_checkbutton(label="Save to roboteam_ai", onvalue=True, offvalue=False, variable=self.save_to_ai)
         self.menubar.add_separator()
 
 
@@ -134,7 +142,7 @@ class Window:
     # Function to show/hide nodes belonging to a certain type
     def toggleNodes(self, type, nodeWindow):
         if type == "roles":
-            nodes = [file[:-5] for file in os.listdir(globals.PROJECT_DIR + "roles/")]
+            nodes = [file[:-5] for file in os.listdir(globals.ai_json_folder + "roles/")]
             isRole = True
         else:
             nodes = Window.types[type]
@@ -154,7 +162,7 @@ class Window:
     def validRootCheck(self):
         roots = [node for node in Node.nodes if node.title == "Root"]
         if len(roots) != 1:
-            messagebox.showinfo('Error 576', 'Error 576: More or less than one root exists')
+            messagebox.showinfo('Error 576', 'Error 576: More or less than one root exists (' + str(len(roots)) + ')')
             return False
 
         root_children = self.getChildren(roots[0], [])
@@ -225,34 +233,82 @@ class Window:
             return [child for _, child in
                     sorted(zip([x for x, y in [a.canvas.coords(a.canvas_id) for a in children]], children))]
 
-    def loadTree(self, name, loadRole=False):
+    def loadTree(self, directory, name, loadRole=False):
         self.newTree()
         self.treeName.set(name)
+        self.saveToFolder.set(directory)
         self.e.focus()
         if loadRole:
-            file = globals.PROJECT_DIR + 'roles/' + name + '.json'
+            file = globals.ai_json_folder + 'roles/' + name + '.json'
         else:
-            file = globals.PROJECT_DIR + 'DO_NOT_TOUCH/' + name + '.json'
+            file = globals.ai_json_folder + directory + "/" + name + ".json"
+
         with open(file, 'r') as f:
             data = json.load(f)
 
         # Draw nodes
         nodes = data["data"]["trees"][0]["nodes"]
         root_child = data["data"]["trees"][0]["root"]
-        for id, node in nodes.items():
-            added_node = self.addNode(node["title"], node, node["isRole"])
-            if id == root_child:
-                root_properties = {"location": {}}
-                root_properties["location"]["x"] = nodes[id]["location"]["x"]
-                root_properties["location"]["y"] = nodes[id]["location"]["y"] - 100
 
-                root = self.addNode("Root", root_properties)
-                root_child = node["id"]
-                root.drawLine(root, added_node)
+        nodes_to_draw = []
+        nodes_to_draw.append([nodes[root_child]])
+        levels = 1
 
-        # Loop again to draw lines
+        while True:
+            next_layer = []
+            for node in nodes_to_draw[levels - 1]:
+                if "children" in node and node["title"] != "Role":
+                    next_layer.extend(node["children"])
+
+            if len(next_layer) == 0:
+                break
+
+            next_layer = [nodes[node_id] for node_id in next_layer]
+            nodes_to_draw.append(next_layer)
+            levels += 1
+
+        layer_height = self.canvas.winfo_height() / (levels + 2)
+
+        for layer in range(len(nodes_to_draw)):
+            y = (layer + 2) * layer_height
+            layer_width = self.canvas.winfo_width() / (len(nodes_to_draw[layer]) + 1)
+            for i in range(len(nodes_to_draw[layer])):
+                node = nodes_to_draw[layer][i]
+                node_properties = {"location": {}}
+                node_properties["id"] = node["id"]
+                node_properties["location"]["x"] = layer_width * (i + 1)
+                node_properties["location"]["y"] = y
+                if "properties" in node:
+                    node_properties["properties"] = node["properties"]
+
+                isRole = False
+                if node["title"] == "Role":
+                    node["title"] = node["role"]
+                    if "properties" not in node:
+                        node["properties"] = {}
+
+                    node["properties"]["isRole"] = True
+                    node_properties["properties"]["ROLE"] = node["name"]
+
+                    isRole = True
+                elif node["title"] == "Tactic":
+                    node_properties["properties"] = {"name": node["name"]}
+
+                added_node = self.addNode(node["title"], node_properties, isRole)
+
+                if layer == 0:
+                    node_properties["id"] = globals.randomID()
+                    node_properties["location"]["x"] = self.canvas.winfo_width() / 2
+                    node_properties["location"]["y"] = layer_height
+
+                    root = self.addNode("Root", node_properties)
+                    root.drawLine(root, added_node)
+
         for id, node in nodes.items():
-            if "children" in node:
+            if id in [x.id for x in Node.nodes] and "children" in node:
+                if "role" in node:
+                    continue
+
                 children = node["children"]
                 for child in children:
                     first_node = [n for n in Node.nodes if n.id == id][0]
@@ -264,13 +320,20 @@ class Window:
         self.e.focus()
         roleList = {}
         changedIDs = {}  # Dictionary to keep track of randomly changed IDs
-        with open(globals.PROJECT_DIR + "roles/" + role.title + ".json") as f:
+        if not role.title + ".json" in os.listdir(globals.ai_json_folder + "roles/"):
+            messagebox.showinfo('Error loading role!',
+                                'Role "' + role.title + ' " not found in ' + globals.ai_json_folder + "roles/")
+            return False
+
+        with open(globals.ai_json_folder + "roles/" + role.title + ".json") as f:
             data = json.load(f)
 
         # Add Role node and add root as child of Role node
         roleList[roleRoot] = {"id": roleRoot}
         roleList[roleRoot]["title"] = "Role"
         roleList[roleRoot]["name"] = role.properties["ROLE"].get()
+        roleList[roleRoot]["role"] = role.title
+        roleList[roleRoot]["isRole"] = True
         childRoot = globals.randomID()
         changedIDs[data["data"]["trees"][0]["root"]] = childRoot
         roleList[roleRoot]["children"] = [childRoot]
@@ -295,13 +358,12 @@ class Window:
         return roleList
 
     def save(self):
-        if self.save_json.get():
-            self.saveJSON(False)
-        if self.save_tree.get():
-            self.saveTree()
-        if self.saveToFolder.get() != "false":
-            self.saveJSON(self.saveToFolder.get())
-        if not self.save_json.get() and not self.save_tree.get():
+        if self.save_to_editor.get():
+            self.saveJSON(globals.PROJECT_DIR)
+        if self.save_to_ai.get():
+            self.saveJSON(globals.ai_json_folder + self.saveToFolder.get())
+
+        if not self.save_to_editor.get() and not self.save_to_ai.get():
             messagebox.showinfo('Warning', 'Nothing was saved!')
 
     # Save tree so it can be loaded in again
@@ -356,7 +418,7 @@ class Window:
         json_file["data"] = data
 
         if saveRole:
-            file = globals.PROJECT_DIR + "roles/" + name + ".json"
+            file = globals.ai_json_folder + "roles/" + name + ".json"
 
             with open(file, 'w') as f:
                 json.dump(json_file, f)
@@ -380,7 +442,7 @@ class Window:
                                 'Tree successfully saved in "DO_NOT_TOUCH" as ' + name + '.json')
 
     # Save tree as interpretable JSON
-    def saveJSON(self, save_to_ai):
+    def saveJSON(self, directory):
         if not self.treeValidation():
             return
 
@@ -410,6 +472,9 @@ class Window:
                     curr_node = que.get()
                     if curr_node.isRole:
                         roleChildren = self.loadRole(curr_node, changedIDs[curr_node.id])
+                        if not roleChildren:
+                            return
+
                         for id, roleChild in roleChildren.items():
                             # Inherit ROLE from the role node
                             if "properties" not in roleChild:
@@ -460,23 +525,13 @@ class Window:
         data["trees"].append(tree)
         json_file["data"] = data
 
-        if save_to_ai:
-            path_to_folder = globals.findJSONDirectory(save_to_ai)
-            if path_to_folder:
-                file = globals.findJSONDirectory(save_to_ai) + name + ".json"
-            else:
-                messagebox.showinfo('Error!', 'An error occurred finding the right path!')
-        else:
-            file = globals.PROJECT_DIR + "jsons/" + name + ".json"
+        file = directory + "/" + name + ".json"
 
         with open(file, 'w') as f:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
 
-        if save_to_ai:
-            messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to "jsons/' + save_to_ai + '" as ' + name + '.json')
-        else:
-            messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to "jsons" as ' + name + '.json')
+        messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to ' + directory + ' as ' + name + '.json')
 
     # Add custom property
     def addProperty(self, node):
