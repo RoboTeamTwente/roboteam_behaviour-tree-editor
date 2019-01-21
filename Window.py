@@ -113,15 +113,6 @@ class Window:
                 submenu.add_command(label=file, command=lambda file=file, directory=directory: self.loadTree(directory, file))
             self.loadmenu.add_cascade(label=directory, menu=submenu)
 
-        self.menubar.add_command(label="Save role", command=lambda: self.saveTree(True))
-
-        # Create role loading menu with all roles as buttons
-        self.loadRoleMenu = Menu(self.menubar, tearoff=0)
-        for file in sorted([f for f in os.listdir(globals.ai_json_folder + "roles") if f != ".keep"]):
-            file = file[:-5]
-            self.loadRoleMenu.add_command(label=file, command=lambda file=file: self.loadTree(file, loadRole=True))
-        self.menubar.add_cascade(label="Load role", menu=self.loadRoleMenu)
-
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
         self.save_to_editor = BooleanVar()
@@ -134,7 +125,6 @@ class Window:
         self.menubar.add_checkbutton(label="Save to editor", onvalue=True, offvalue=False, variable=self.save_to_editor)
         self.menubar.add_checkbutton(label="Save to roboteam_ai", onvalue=True, offvalue=False, variable=self.save_to_ai)
         self.menubar.add_separator()
-
 
         # Configure menu bar
         self.root.config(menu=self.menubar)
