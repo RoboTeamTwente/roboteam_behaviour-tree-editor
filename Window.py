@@ -274,10 +274,9 @@ class Window:
                 isRole = False
                 if node["title"] == "Role":
                     node["title"] = node["role"]
-                    if "properties" not in node:
-                        node["properties"] = {}
+                    if "properties" not in node_properties:
+                        node_properties["properties"] = {}
 
-                    node["properties"]["isRole"] = True
                     node_properties["properties"]["ROLE"] = node["name"]
 
                     isRole = True
