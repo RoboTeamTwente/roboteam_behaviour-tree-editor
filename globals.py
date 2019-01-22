@@ -17,10 +17,13 @@ def randomID():
 def findJSONDirectory():
     directory = os.getcwd()
     while True:
-        directory = os.path.abspath(os.path.join(directory, ".."))
         if directory.split("/")[-1] == "roboteamtwente":
             directory += "/workspace/src/roboteam_ai/roboteam_ai/src/jsons/"
             if os.path.exists(directory):
                 return directory
             else:
                 return False
+        elif directory == "home":
+            exit("roboteam_ai not found!")
+
+        directory = os.path.abspath(os.path.join(directory, ".."))
