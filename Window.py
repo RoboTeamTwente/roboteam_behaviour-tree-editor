@@ -66,10 +66,12 @@ class Window:
         self.bottomWindow.pack(fill=BOTH, expand=1)
 
         self.nodeList = PanedWindow(self.bottomWindow, orient=VERTICAL)
-        self.bottomWindow.add(self.nodeList)
+        self.nodeList.pack(side=LEFT, fill=Y)
+        #self.bottomWindow.add(self.nodeList)
 
         self.canvasPane = PanedWindow(self.bottomWindow)
-        self.bottomWindow.add(self.canvasPane)
+        self.canvasPane.pack(side=LEFT, expand=1, fill=BOTH)
+        #self.bottomWindow.add(self.canvasPane)
 
         # Create canvas that the trees can be drawn on
         self.canvas = Canvas(self.canvasPane, width=750, height=550)
@@ -77,26 +79,27 @@ class Window:
         self.canvas.dnd_accept = self.dnd_accept
 
         self.prop_window = PanedWindow(self.bottomWindow)
-        self.bottomWindow.add(self.prop_window)
+        self.prop_window.pack(side=RIGHT)
+        #self.bottomWindow.add(self.prop_window)
 
         # Spawn root node
         newNode = Button(self.nodeList, text="Root", command=lambda title="Root": self.addNode(title))
-        newNode.pack(fill=BOTH)
+        newNode.pack(side=TOP, fill=BOTH)
 
         # Spawn node types
         for type, nodes in types.items():
             nodeWindow = PanedWindow(self.nodeList)
             newLabel = Button(nodeWindow, text=type.capitalize(), font="bold", bd=0,
                               command=lambda type=type, nodeWindow=nodeWindow: self.toggleNodes(type, nodeWindow))
-            newLabel.pack(fill=BOTH)
-            nodeWindow.pack(fill=BOTH)
+            newLabel.pack(side=TOP, fill=BOTH)
+            nodeWindow.pack(side=TOP, fill=BOTH)
 
         # Spawn role nodes
         nodeWindow = PanedWindow(self.nodeList)
         newLabel = Button(nodeWindow, text="Roles", font="bold", bd=0,
                           command=lambda nodeWindow=nodeWindow: self.toggleNodes("roles", nodeWindow))
-        newLabel.pack(fill=BOTH)
-        nodeWindow.pack(fill=BOTH)
+        newLabel.pack(side=TOP, fill=BOTH)
+        nodeWindow.pack(side=TOP, fill=BOTH)
 
         # Create menu bar
         self.menubar = Menu(self.root)
