@@ -344,6 +344,11 @@ class Window:
 
                     node["children"][i] = changedIDs[child]
 
+            if "optional" in role.properties:
+                if "properties" not in node:
+                    node["properties"] = {}
+                node["properties"]["optional"] = role.optional
+
             node["id"] = id
             roleList[id] = node
 
