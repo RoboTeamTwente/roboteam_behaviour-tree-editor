@@ -20,10 +20,19 @@ To draw lines between nodes, hold "d" and drag a line between nodes.
 
 To remove nodes, hold "r" while pressing it.
 
+Currently, lines cannot be deleted. Delete one of the nodes connected to it to also remove the line.
+
 # How-to save trees and compile them to JSON
 When saving a tree, make sure it has a root node! Trees are generated from the root downwards. The root node can only have 1 child.
 
 Currently the system is not completely fool-proof, so adding circles to the tree might give errors.
+
+# roboteam_ai integration
+The behavior tree editor is integrated with roboteam_ai. This means that all trees are directly loaded from and saved to the jsons folder in roboteam_ai. The only folder that must exists here is "roles", because it is needed for the role integration. The rest can be named whatever, but will most likely be "strategies" and "tactics".
+
+The config files are found in "src/tree_interep/config_files" in roboteam_ai.
+
+Trees with Role nodes that were made before the roboteam_ai integration will not be able to be loaded back in.
 
 # How-to create and use roles
 Roles do not need the node "Role", but they do need a root.
