@@ -231,6 +231,8 @@ class Window:
         self.treeName.set(name)
         self.saveToFolder.set(directory)
         self.e.focus()
+
+        # Check if a role is loaded
         if loadRole:
             file = globals.ai_json_folder + 'roles/' + name + '.json'
         else:
@@ -247,6 +249,7 @@ class Window:
         nodes_to_draw.append([nodes[root_child]])
         levels = 1
 
+        # Sort all nodes that need to be drawn into a list of lists, which represent layers
         while True:
             next_layer = []
             for node in nodes_to_draw[levels - 1]:
@@ -262,9 +265,12 @@ class Window:
 
         layer_height = self.canvas.winfo_height() / (levels + 2)
 
+        # Loop over all layers
         for layer in range(len(nodes_to_draw)):
             y = (layer + 2) * layer_height
             layer_width = self.canvas.winfo_width() / (len(nodes_to_draw[layer]) + 1)
+
+            # Loop over nodes in layer
             for i in range(len(nodes_to_draw[layer])):
                 node = nodes_to_draw[layer][i]
                 node_properties = {"location": {}}
@@ -288,6 +294,7 @@ class Window:
 
                 added_node = self.addNode(node["title"], node_properties, isRole)
 
+                # Build root node if layer number = 0
                 if layer == 0:
                     node_properties["id"] = globals.randomID()
                     node_properties["location"]["x"] = self.canvas.winfo_width() / 2
@@ -296,6 +303,7 @@ class Window:
                     root = self.addNode("Root", node_properties)
                     root.drawLine(root, added_node)
 
+        # Draw lines between all nodes just drawn
         for id, node in nodes.items():
             if id in [x.id for x in Node.nodes] and "children" in node:
                 if "role" in node:
@@ -330,6 +338,7 @@ class Window:
         changedIDs[data["data"]["trees"][0]["root"]] = childRoot
         roleList[roleRoot]["children"] = [childRoot]
 
+        # Loop over all nodes in role
         for id, node in data["data"]["trees"][0]["nodes"].items():
             if id in [key for key, _ in changedIDs.items()]:
                 id = changedIDs[id]
@@ -377,7 +386,10 @@ class Window:
         data = {"trees": []}
         tree = {"title": name}
 
+        # Loop over all existing nodes. Only do something when node title == "Root"
         for n in Node.nodes:
+
+            # Start building tree if the root node is found
             if n.title == "Root":
                 root_children = self.getChildren(n, added)
                 if root_children[0].isRole:
@@ -389,9 +401,12 @@ class Window:
                 tree["nodes"] = {}
                 que.put(n)
 
+                # Children kept being added to the que, and nodes are added to the JSON until no children exist anymore
                 while not que.empty():
                     node_dic = {}
                     curr_node = que.get()
+
+                    # If curr_node is a role, it is replaced by the JSON of the role in the tree (most likely a tactic)
                     if curr_node.isRole:
                         roleChildren = self.loadRole(curr_node, changedIDs[curr_node.id])
                         if not roleChildren:
@@ -411,6 +426,8 @@ class Window:
                                 del roleChild["isRole"]
 
                             tree["nodes"][id] = roleChild
+
+                    # If curr_node is not a role node, it is added and it's children are added to the queue
                     else:
                         node_dic["id"] = curr_node.id
                         node_dic["title"] = curr_node.title
@@ -428,6 +445,7 @@ class Window:
 
                         properties = curr_node.properties
                         if properties:
+
                             # In case of Role and Tactic nodes, make the child name/role the name of the node
                             if curr_node.title == "Tactic":
                                 node_dic["name"] = properties["name"].get()
