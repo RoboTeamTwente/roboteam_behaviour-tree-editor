@@ -362,7 +362,8 @@ class Window:
 
         return roleList
 
-    def checkRoleNames(self):
+    @staticmethod
+    def checkRoleNames():
         for node in Node.nodes:
             if node.isRole:
                 if len(node.properties["ROLE"].get()) == 0:
