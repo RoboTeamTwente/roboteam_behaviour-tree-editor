@@ -21,7 +21,9 @@ import operator
 import random
 import string
 import globals
+import platform
 
+OS = platform.system()
 
 class Window:
     types = dict()
@@ -65,8 +67,22 @@ class Window:
         self.bottomWindow = PanedWindow(self.window)
         self.bottomWindow.pack(fill=BOTH, expand=1)
 
-        self.nodeList = PanedWindow(self.bottomWindow, orient=VERTICAL)
-        self.nodeList.pack(side=LEFT, fill=Y)
+        self.nodeCanvas = Canvas(self.bottomWindow)
+        self.nodeFrame = Frame(self.nodeCanvas)
+        self.vsb = Scrollbar(self.nodeFrame, orient=VERTICAL, command=self.nodeCanvas.yview)
+        self.nodeCanvas.configure(yscrollcommand=self.vsb.set)
+        self.vsb.pack(side=RIGHT, fill=Y)
+        self.nodeCanvas.pack(side=LEFT, fill=Y, expand=False)
+        self.nodeCanvas.create_window((4, 4), window=self.nodeFrame, anchor="nw", tags="self.nodeFrame")
+
+        if OS == "Linux":
+            self.nodeCanvas.bind_all("<4>", self.onMouseWheel)
+            self.nodeCanvas.bind_all("<5>", self.onMouseWheel)
+        else:
+            self.nodeCanvas.bind_all("<MouseWheel>", self.onMouseWheel)
+
+        self.nodeFrame.bind("<Configure>", self.onFrameConfigure)
+
         #self.bottomWindow.add(self.nodeList)
 
         self.canvasPane = PanedWindow(self.bottomWindow)
@@ -83,19 +99,19 @@ class Window:
         #self.bottomWindow.add(self.prop_window)
 
         # Spawn root node
-        newNode = Button(self.nodeList, text="Root", command=lambda title="Root": self.addNode(title))
+        newNode = Button(self.nodeFrame, text="Root", command=lambda title="Root": self.addNode(title))
         newNode.pack(side=TOP, fill=BOTH)
 
         # Spawn node types
         for type, nodes in types.items():
-            nodeWindow = PanedWindow(self.nodeList)
+            nodeWindow = PanedWindow(self.nodeFrame)
             newLabel = Button(nodeWindow, text=type.capitalize(), font="bold", bd=0,
                               command=lambda type=type, nodeWindow=nodeWindow: self.toggleNodes(type, nodeWindow))
             newLabel.pack(side=TOP, fill=BOTH)
             nodeWindow.pack(side=TOP, fill=BOTH)
 
         # Spawn role nodes
-        nodeWindow = PanedWindow(self.nodeList)
+        nodeWindow = PanedWindow(self.nodeFrame)
         newLabel = Button(nodeWindow, text="Roles", font="bold", bd=0,
                           command=lambda nodeWindow=nodeWindow: self.toggleNodes("roles", nodeWindow))
         newLabel.pack(side=TOP, fill=BOTH)
@@ -131,6 +147,19 @@ class Window:
 
         # Configure menu bar
         self.root.config(menu=self.menubar)
+
+    def onMouseWheel(self, event):
+        if OS == "Linux":
+            if event.num == 4:
+                self.nodeCanvas.yview_scroll(-1, "units")
+            elif event.num == 5:
+                self.nodeCanvas.yview_scroll(1, "units")
+        else:
+            self.nodeCanvas.yview_scroll(-1*event.delta/120, "units")
+
+    def onFrameConfigure(self, event):
+        '''Reset the scroll region to encompass the inner frame'''
+        self.nodeCanvas.configure(scrollregion=self.nodeCanvas.bbox("all"))
 
     # Function to show/hide nodes belonging to a certain type
     def toggleNodes(self, type, nodeWindow):
