@@ -273,8 +273,7 @@ class Window:
             # Loop over nodes in layer
             for i in range(len(nodes_to_draw[layer])):
                 node = nodes_to_draw[layer][i]
-                node_properties = {"location": {}}
-                node_properties["id"] = node["id"]
+                node_properties = {"location": {}, "id": node["id"]}
                 node_properties["location"]["x"] = layer_width * (i + 1)
                 node_properties["location"]["y"] = y
                 if "properties" in node:
@@ -363,7 +362,19 @@ class Window:
 
         return roleList
 
+    def checkRoleNames(self):
+        for node in Node.nodes:
+            if node.isRole:
+                if len(node.properties["ROLE"].get()) == 0:
+                    return False
+
+        return True
+
     def save(self):
+        if not self.checkRoleNames():
+            messagebox.showinfo('Warning', 'Role node without ROLE!')
+            return
+
         if self.save_to_editor.get():
             self.saveJSON(globals.PROJECT_DIR)
         if self.save_to_ai.get():
