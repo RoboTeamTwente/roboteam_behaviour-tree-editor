@@ -400,11 +400,6 @@ class Window:
 
                     node["children"][i] = changedIDs[child]
 
-            # if "optional" in role.properties:
-            #     if "properties" not in node:
-            #         node["properties"] = {}
-            #     node["properties"]["optional"] = role.properties["optional"]
-
             node["id"] = id
             roleList[id] = node
 
@@ -465,6 +460,12 @@ class Window:
                 while not que.empty():
                     node_dic = {}
                     curr_node = que.get()
+
+                    if curr_node.title == "RoleDivider":
+                        if len(curr_node.properties["TacticType"].get()) == 0:
+                            messagebox.showinfo('Error in RoleDivider!',
+                                                'RoleDivider has no TacticType')
+                            return;
 
                     # If curr_node is a role, it is replaced by the JSON of the role in the tree (most likely a tactic)
                     if curr_node.isRole:
