@@ -50,7 +50,6 @@ class Node:
 
             if self.isRole:
                 self.properties["ROLE"] = StringVar()
-                self.properties["optional"] = StringVar()
 
         Node.nodes.append(self)
 
