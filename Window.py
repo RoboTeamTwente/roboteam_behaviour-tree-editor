@@ -460,13 +460,6 @@ class Window:
                 while not que.empty():
                     node_dic = {}
                     curr_node = que.get()
-
-                    if curr_node.title == "RoleDivider":
-                        if len(curr_node.properties["TacticType"].get()) == 0:
-                            messagebox.showinfo('Error in RoleDivider!',
-                                                'RoleDivider has no TacticType')
-                            return;
-
                     # If curr_node is a role, it is replaced by the JSON of the role in the tree (most likely a tactic)
                     if curr_node.isRole:
                         roleChildren = self.loadRole(curr_node, changedIDs[curr_node.id])
@@ -515,6 +508,9 @@ class Window:
                             else:
                                 node_dic["properties"] = {}
                                 for property, value in properties.items():
+                                    if property[0] == "*":
+                                        property = property.split(";")[0][1:]
+
                                     if value.get():
                                         node_dic["properties"][property] = value.get()
 
@@ -552,12 +548,23 @@ class Window:
         properties = node.properties
         for property, value in properties.items():
             window = PanedWindow(self.prop_window)
-            label = Label(window, text=property)
-            label.pack(side=LEFT)
-            entry = Entry(window, textvariable=properties[property])
-            entry.pack(side=RIGHT)
-            window.pack(fill=X)
+            if property[0] == "*":
+                propertyList = property.split(";")
+                label = Label(window, text=propertyList[0][1:])
+                label.pack(side=LEFT)
+                choices = propertyList[1:]
+                entry = OptionMenu(window, value, *choices)
+                value.set(choices[0])
+                entry.pack(side=RIGHT)
+                window.pack(fill=X)
+            else:
+                label = Label(window, text=property)
+                label.pack(side=LEFT)
+                entry = Entry(window, textvariable=properties[property])
+                entry.pack(side=RIGHT)
+                window.pack(fill=X)
 
+        #Spawn custom property
         custom_prop_window = PanedWindow(self.prop_window)
         self.custom_prop_string = StringVar()
         cust_entry = Entry(custom_prop_window, textvariable=self.custom_prop_string)
