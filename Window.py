@@ -554,7 +554,7 @@ class Window:
                 label.pack(side=LEFT)
                 choices = propertyList[1:]
                 entry = OptionMenu(window, value, *choices)
-                value.set(choices[-1])
+                value.set(choices[0])
                 entry.pack(side=RIGHT)
                 window.pack(fill=X)
             else:
