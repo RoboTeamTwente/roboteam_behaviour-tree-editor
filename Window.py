@@ -132,6 +132,7 @@ class Window:
                 submenu.add_command(label=file, command=lambda file=file, directory=directory: self.loadTree(directory, file))
             self.loadmenu.add_cascade(label=directory, menu=submenu)
 
+        self.menubar.add_command(label="Reload all tactics", command=self.reloadAllTactics)
         self.menubar.add_command(label="Quit", command=self.root.quit)
 
         self.save_to_editor = BooleanVar()
@@ -140,6 +141,8 @@ class Window:
         self.save_json_ai.set(False)
         self.save_to_ai = BooleanVar()
         self.save_to_ai.set(True)
+
+        self.saveConfirmation = True
 
         self.menubar.add_checkbutton(label="Save to editor", onvalue=True, offvalue=False, variable=self.save_to_editor)
         self.menubar.add_checkbutton(label="Save to roboteam_ai", onvalue=True, offvalue=False, variable=self.save_to_ai)
@@ -343,6 +346,22 @@ class Window:
                     second_node = [n for n in Node.nodes if n.id == child][0]
                     first_node.drawLine(first_node, second_node)
 
+    # Reload all tactics to make sure the roles are refreshed
+    def reloadAllTactics(self):
+        if messagebox.askyesno("Reload all tactics", "Are you sure you want to reload all tactics?"):
+            self.saveConfirmation = False
+            self.newTree()
+            tactics = [file[:-5] for file in os.listdir(globals.ai_json_folder + "tactics/")]
+            for tactic in tactics:
+                try:
+                    self.loadTree("tactics", tactic, False)
+                    self.save()
+                except:
+                    print("Unable to save or load tactic", tactic)
+                self.newTree()
+
+        self.saveConfirmation = True
+
     # Load role in order to add to JSON
     def loadRole(self, role, roleRoot):
         self.e.focus()
@@ -512,7 +531,8 @@ class Window:
             json.dump(json_file, f)
         os.chmod(file, 0o777)
 
-        messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to ' + directory + ' as ' + name + '.json')
+        if self.saveConfirmation:
+            messagebox.showinfo('JSON saved successfully!', 'JSON successfully exported to ' + directory + ' as ' + name + '.json')
 
     # Add custom property
     def addProperty(self, node):
