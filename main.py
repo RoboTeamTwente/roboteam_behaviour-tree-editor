@@ -28,7 +28,7 @@ def getNodes():
                 nodes[node].extend(row[1:])
 
     for key, value in types.items():
-        types[key] = sorted(value)
+        types[key] = sorted(value, key=lambda s: s.lower())
 
     return types, nodes
 
