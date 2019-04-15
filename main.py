@@ -8,7 +8,10 @@ import os
 from collections import defaultdict
 import csv
 import globals
+import collections
+import pprint
 
+pp = pprint.PrettyPrinter()
 
 def getNodes():
     DIR = os.path.abspath(os.path.join(globals.ai_json_folder, "..", "treeinterp/config_files/"))
@@ -23,6 +26,9 @@ def getNodes():
                 node = row[0]
                 types[node_type].append(row[0])
                 nodes[node].extend(row[1:])
+
+    for key, value in types.items():
+        types[key] = sorted(value)
 
     return types, nodes
 
