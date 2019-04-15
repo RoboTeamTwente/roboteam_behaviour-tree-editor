@@ -71,7 +71,7 @@ class Window:
         self.nodeFrame = Frame(self.nodeCanvas)
         self.vsb = Scrollbar(self.nodeFrame, orient=VERTICAL, command=self.nodeCanvas.yview)
         self.nodeCanvas.configure(yscrollcommand=self.vsb.set)
-        self.vsb.pack(side=RIGHT, fill=Y)
+        self.vsb.pack(side=LEFT, fill=Y)
         self.nodeCanvas.pack(side=LEFT, fill=Y, expand=False)
         self.nodeCanvas.create_window((4, 4), window=self.nodeFrame, anchor="nw", tags="self.nodeFrame")
 
@@ -83,20 +83,16 @@ class Window:
 
         self.nodeFrame.bind("<Configure>", self.onFrameConfigure)
 
-        #self.bottomWindow.add(self.nodeList)
-
         self.canvasPane = PanedWindow(self.bottomWindow)
         self.canvasPane.pack(side=LEFT, expand=1, fill=BOTH)
-        #self.bottomWindow.add(self.canvasPane)
 
         # Create canvas that the trees can be drawn on
-        self.canvas = Canvas(self.canvasPane, width=750, height=550)
+        self.canvas = Canvas(self.canvasPane)
         self.canvasPane.add(self.canvas)
         self.canvas.dnd_accept = self.dnd_accept
 
         self.prop_window = PanedWindow(self.bottomWindow)
-        self.prop_window.pack(side=RIGHT)
-        #self.bottomWindow.add(self.prop_window)
+        self.prop_window.pack(side=RIGHT, expand=0, fill=Y)
 
         # Spawn root node
         newNode = Button(self.nodeFrame, text="Root", command=lambda title="Root": self.addNode(title))
@@ -105,14 +101,14 @@ class Window:
         # Spawn node types
         for type, nodes in types.items():
             nodeWindow = PanedWindow(self.nodeFrame)
-            newLabel = Button(nodeWindow, text=type.capitalize(), font="bold", bd=0,
+            newLabel = Button(nodeWindow, text=type.capitalize(), font="bold", bd=0, background="grey",
                               command=lambda type=type, nodeWindow=nodeWindow: self.toggleNodes(type, nodeWindow))
             newLabel.pack(side=TOP, fill=BOTH)
             nodeWindow.pack(side=TOP, fill=BOTH)
 
         # Spawn role nodes
         nodeWindow = PanedWindow(self.nodeFrame)
-        newLabel = Button(nodeWindow, text="Roles", font="bold", bd=0,
+        newLabel = Button(nodeWindow, text="Roles", font="bold", bd=0, background="grey",
                           command=lambda nodeWindow=nodeWindow: self.toggleNodes("roles", nodeWindow))
         newLabel.pack(side=TOP, fill=BOTH)
         nodeWindow.pack(side=TOP, fill=BOTH)
