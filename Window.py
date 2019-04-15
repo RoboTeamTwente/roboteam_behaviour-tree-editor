@@ -127,7 +127,7 @@ class Window:
         self.menubar.add_cascade(label="Load tree", menu=self.loadmenu)
         for directory in [location for location in os.listdir(globals.ai_json_folder) if os.path.isdir(globals.ai_json_folder + location)]:
             submenu = Menu(self.loadmenu, tearoff=0)
-            for tree_file in [x for x in os.listdir(globals.ai_json_folder + directory) if x[-5:] == ".json"]:
+            for tree_file in sorted([x for x in os.listdir(globals.ai_json_folder + directory) if x[-5:] == ".json"]):
                 file = tree_file[:-5]
                 submenu.add_command(label=file, command=lambda file=file, directory=directory: self.loadTree(directory, file))
             self.loadmenu.add_cascade(label=directory, menu=submenu)
@@ -168,9 +168,11 @@ class Window:
     def toggleNodes(self, type, nodeWindow):
         if type == "roles":
             nodes = [file[:-5] for file in os.listdir(globals.ai_json_folder + "roles/")]
+            nodes = sorted(nodes)
             isRole = True
         else:
             nodes = Window.types[type]
+            nodes = sorted(nodes)
             isRole = False
 
         destroying = False
