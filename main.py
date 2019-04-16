@@ -23,9 +23,10 @@ def getNodes():
             node_type = file[:-4]
             csv_reader = csv.reader(f)
             for row in csv_reader:
-                node = row[0]
-                types[node_type].append(row[0])
-                nodes[node].extend(row[1:])
+                if len(row) > 0:
+                    node = row[0]
+                    types[node_type].append(row[0])
+                    nodes[node].extend(row[1:])
 
     for key, value in types.items():
         types[key] = sorted(value, key=lambda s: s.lower())
