@@ -309,6 +309,14 @@ class Window:
                 if "properties" in node:
                     node_properties["properties"] = node["properties"]
 
+                if node["title"] in Window.nodes:
+                    if "properties" not in node_properties:
+                        node_properties["properties"] = {}
+
+                    for prop in Window.nodes[node["title"]]:
+                        if prop not in node_properties["properties"]:
+                            node_properties["properties"][prop] = ""
+
                 isRole = False
                 if node["title"] == "Role":
                     node["title"] = node["role"]
